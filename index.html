@@ -608,10 +608,7 @@
         <div class="container">
             <h2>📩 Оставьте заявку</h2>
             <div class="contact-form">
-                <form id="leadForm" action="https://formsubmit.co/el/fipoxi?attachment=true" method="POST" enctype="multipart/form-data">
-                    <!-- File uploads via Formspree are not permitted on current plan.
-                         For submissions WITH a file we send via formly.email (requires access_key). -->
-                    <input type="hidden" name="formly_access_key" id="formlyAccessKey" value="81b99c4e990d422692a9a2e45fceb069">
+                <form id="leadForm" action="#" method="POST">
                     <label for="leadName">Ваше имя</label>
                     <input id="leadName" name="name" type="text" placeholder="Алексей" autocomplete="name" required>
                     <label for="leadContact">Телефон / Telegram</label>
@@ -621,8 +618,8 @@
                     <label>Файлы (фото/чертёж)</label>
                     <div class="file-drop" id="leadFileDrop" role="button" tabindex="0" aria-label="Зона загрузки файла. Нажмите, чтобы выбрать файл или перетащите файл сюда.">
                         <i class="fas fa-cloud-upload-alt" aria-hidden="true"></i>
-                        <p>Перетащите файлы или <label style="color:#2563eb; cursor: pointer;">выберите файлы<input type="file" id="leadFileInput" name="attachment" hidden multiple accept="image/*,.pdf,.zip,.rar,.7z,.step,.stp,.stl,.dwg,.dxf"></label></p>
-                        <p style="font-size: 0.7rem; margin-top: 0.5rem;">Фото/документы до 10 МБ</p>
+                        <p>Перетащите файлы или <label style="color:#2563eb; cursor: pointer;">выберите файлы<input type="file" id="leadFileInput" name="attachment" hidden multiple accept=".jpg,.jpeg,.png,.gif,.webp,.heic,.heif,.bmp,.tif,.tiff,.pdf,.zip,.rar,.7z,.step,.stp,.stl,.dwg,.dxf"></label></p>
+                        <p style="font-size: 0.7rem; margin-top: 0.5rem;">Фото, PDF, чертежи, 3D-модели, архивы — до 10 файлов, всего до 10 МБ</p>
                     </div>
                     <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; margin-top: 0.5rem;">
                         <div id="leadFileStatus" style="font-size: 0.8rem;" aria-live="polite"></div>
@@ -631,6 +628,11 @@
                     <div id="leadFileList" style="margin-top:0.5rem;"></div>
                     <input type="hidden" name="page" id="leadPage">
                     <input type="hidden" name="time" id="leadTime">
+                    <!-- Ловушка для ботов: поле скрыто от людей, заполненные им заявки сервер не отправляет -->
+                    <div aria-hidden="true" style="position:absolute; left:-10000px; width:1px; height:1px; overflow:hidden;">
+                        <label for="leadWebsite">Сайт</label>
+                        <input id="leadWebsite" name="website" type="text" tabindex="-1" autocomplete="off">
+                    </div>
                     <button type="submit" class="btn btn-primary" style="width:100%;">Отправить заявку → инженер свяжется за 20 минут</button>
                     <div id="leadStatus" style="font-size: 0.9rem; margin-top: 0.75rem;" aria-live="polite"></div>
                     <div id="leadAltSend" style="display:none; margin-top:0.75rem; gap:0.6rem; flex-wrap:wrap;">
@@ -702,12 +704,15 @@
         openModal(btn.dataset.before, btn.dataset.after);
     });
 
-    // Lead form integration for static hosting (Formspree).
+    // Отправка заявки через собственную функцию в Yandex Cloud (работает без VPN).
+    // Файлы загружаются в Object Storage по временным ссылкам, функция прикладывает их к письму.
+    // После деплоя функции (см. DEPLOY.md) вставьте сюда её публичный URL.
+    const LEAD_ENDPOINT = 'https://functions.yandexcloud.net/d4ehb99eogd2b8r79s6m';
+
     const leadForm = document.getElementById('leadForm');
     const leadStatus = document.getElementById('leadStatus');
     const leadPage = document.getElementById('leadPage');
     const leadTime = document.getElementById('leadTime');
-    const formlyAccessKeyEl = document.getElementById('formlyAccessKey');
     const leadAltSend = document.getElementById('leadAltSend');
     const leadTelegramLink = document.getElementById('leadTelegramLink');
     const leadCopyTextBtn = document.getElementById('leadCopyTextBtn');
@@ -716,7 +721,10 @@
     const leadFileStatus = document.getElementById('leadFileStatus');
     const leadFileClearBtn = document.getElementById('leadFileClearBtn');
     const leadFileList = document.getElementById('leadFileList');
-    const MAX_BYTES = 10 * 1024 * 1024;
+    const MAX_BYTES = 10 * 1024 * 1024; // должен совпадать с MAX_TOTAL_BYTES в index.py
+    const MAX_FILES = 10;               // должен совпадать с MAX_FILES в index.py
+    const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'heif', 'bmp', 'tif', 'tiff',
+        'pdf', 'zip', 'rar', '7z', 'step', 'stp', 'stl', 'dwg', 'dxf']; // то же, что ALLOWED_EXTENSIONS в index.py
 
     function setLeadStatus(text, color = '#16a34a') {
         if (!leadStatus) return;
@@ -788,6 +796,9 @@
     }
 
     function validateLeadFiles(files) {
+        if (files.length > MAX_FILES) return { ok: false, message: `Можно прикрепить не более ${MAX_FILES} файлов.` };
+        const bad = files.find(f => !ALLOWED_EXTENSIONS.includes(String(f?.name || '').split('.').pop().toLowerCase()));
+        if (bad) return { ok: false, message: `Недопустимый тип файла: ${bad.name}. Разрешены фото, PDF, STEP/STL, DWG/DXF и архивы.` };
         const total = files.reduce((sum, f) => sum + (f?.size || 0), 0);
         if (total > MAX_BYTES) return { ok: false, message: `Слишком большой общий размер файлов (${formatBytes(total)}). Максимум 10 МБ.` };
         return { ok: true };
@@ -941,6 +952,33 @@
             });
         }
 
+        async function callLeadEndpoint(body) {
+            const res = await fetch(LEAD_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            const data = await res.json().catch(() => null);
+            if (!res.ok || !data?.ok) throw new Error(data?.error || `HTTP ${res.status}`);
+            return data;
+        }
+
+        // Загружает файл по временной ссылке в Object Storage; onProgress получает число загруженных байт.
+        // XMLHttpRequest вместо fetch — только ради индикатора прогресса.
+        function uploadFile(url, file, onProgress) {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.open('PUT', url);
+                if (file.type) xhr.setRequestHeader('Content-Type', file.type);
+                xhr.upload.onprogress = (e) => { if (e.lengthComputable) onProgress(e.loaded); };
+                xhr.onload = () => (xhr.status >= 200 && xhr.status < 300)
+                    ? resolve()
+                    : reject(new Error(`не удалось загрузить файл ${file.name} (HTTP ${xhr.status})`));
+                xhr.onerror = () => reject(new Error(`не удалось загрузить файл ${file.name} (нет соединения с хранилищем)`));
+                xhr.send(file);
+            });
+        }
+
         leadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -952,91 +990,64 @@
                 return;
             }
 
+            const name = (leadForm.elements.namedItem('name')?.value || '').trim();
+            const contact = (leadForm.elements.namedItem('contact')?.value || '').trim();
+            const comment = (leadForm.elements.namedItem('comment')?.value || '').trim();
+
             try {
                 if (submitBtn) {
                     submitBtn.disabled = true;
                     submitBtn.style.opacity = '0.85';
                 }
                 setLeadStatus('Отправляем заявку…', '#0369a1');
-                showAltSend();
 
-                const hasFile = selectedFiles.length > 0;
-                const names = selectedFiles.map(f => f?.name).filter(Boolean).join(', ') || '-';
-
-                // 1) Always send the lead to Formspree (WITHOUT files) for reliability (works without VPN).
-                const leadFd = new FormData(leadForm);
-                leadFd.delete('formly_access_key');
-                leadFd.delete('attachment');
-                if (hasFile) {
-                    leadFd.append('file_note', `Файлы прикреплены на сайте, но могут не дойти без VPN. Имена файлов: ${names}`);
+                if (!LEAD_ENDPOINT || LEAD_ENDPOINT.includes('REPLACE-ME')) {
+                    throw new Error('Адрес обработчика заявок не настроен (LEAD_ENDPOINT)');
                 }
 
-                const leadRes = await fetch(leadForm.action, {
-                    method: 'POST',
-                    body: leadFd,
-                    headers: { 'Accept': 'application/json' }
+                const files = [];
+                let uploadId = '';
+                if (selectedFiles.length) {
+                    const init = await callLeadEndpoint({
+                        action: 'init',
+                        files: selectedFiles.map(f => ({ name: f.name, size: f.size, type: f.type }))
+                    });
+                    uploadId = init.uploadId;
+                    const totalBytes = totalSelectedBytes() || 1;
+                    const loaded = selectedFiles.map(() => 0);
+                    const showProgress = () => {
+                        const pct = Math.min(100, Math.round(loaded.reduce((a, b) => a + b, 0) / totalBytes * 100));
+                        setLeadStatus(`Загружаем файлы… ${pct}%`, '#0369a1');
+                    };
+                    showProgress();
+                    await Promise.all(selectedFiles.map((f, i) =>
+                        uploadFile(init.uploads[i].url, f, (bytes) => { loaded[i] = bytes; showProgress(); })
+                    ));
+                    selectedFiles.forEach((f, i) => files.push({ key: init.uploads[i].key, filename: f.name }));
+                    setLeadStatus('Отправляем заявку…', '#0369a1');
+                }
+
+                await callLeadEndpoint({
+                    action: 'submit',
+                    name,
+                    contact,
+                    comment,
+                    website: (leadForm.elements.namedItem('website')?.value || ''),
+                    page: leadPage ? leadPage.value : location.href,
+                    time: leadTime ? leadTime.value : new Date().toLocaleString('ru-RU'),
+                    uploadId,
+                    files
                 });
 
-                if (!leadRes.ok) {
-                    const data = await leadRes.json().catch(() => null);
-                    const msg =
-                        data?.errors?.map(e => e.message).filter(Boolean).join('; ') ||
-                        data?.error ||
-                        `HTTP ${leadRes.status}`;
-                    setLeadStatus(`Не удалось отправить заявку: ${msg}`, '#b91c1c');
-                    return;
-                }
-                const leadData = await leadRes.json().catch(() => null);
-
-                // 2) If there are files, try to upload them via formly.email (may be blocked in some networks).
-                if (hasFile) {
-                    const formlyKey = String(formlyAccessKeyEl?.value || '').trim();
-                    if (!formlyKey) {
-                        setLeadStatus('Заявка принята (без файла). Пожалуйста, отправьте файл с VPN или прикрепите ссылку на файлообменник.', '#b45309');
-                        leadForm.reset();
-                        if (leadPage) leadPage.value = location.href;
-                        setLeadFileStatus('');
-                        setLeadFileSelected(false);
-                        setSelectedFiles([]);
-                        return;
-                    }
-
-                    setLeadStatus('Заявка отправлена. Загружаем файлы…', '#0369a1');
-
-                    const filesFd = new FormData(leadForm);
-                    filesFd.delete('attachment');
-                    selectedFiles.forEach(f => filesFd.append('attachment', f));
-                    filesFd.set('access_key', formlyKey);
-                    filesFd.set('subject', 'Заявка с лендинга Реверспром (файлы)');
-                    filesFd.set('from_name', 'Реверспром — лендинг');
-                    filesFd.delete('formly_access_key');
-
-                    try {
-                        const filesRes = await fetch('https://formly.email/submit', {
-                            method: 'POST',
-                            body: filesFd,
-                            headers: { 'Accept': 'application/json' }
-                        });
-
-                        if (!filesRes.ok) {
-                            setLeadStatus('Заявка принята (без файла). Пожалуйста, отправьте файл с VPN или прикрепите ссылку на файлообменник.', '#b45309');
-                        } else {
-                            setLeadStatus('Заявка принята. Файлы отправлены. Спасибо! Мы свяжемся с вами в ближайшее время.', '#16a34a');
-                        }
-                    } catch (err) {
-                        setLeadStatus('Заявка принята (без файла). Пожалуйста, отправьте файл с VPN или прикрепите ссылку на файлообменник.', '#b45309');
-                    }
-                } else {
-                    setLeadStatus('Заявка принята. Спасибо! Мы свяжемся с вами в ближайшее время.', '#16a34a');
-                }
-
+                setLeadStatus('Заявка принята. Спасибо! Мы свяжемся с вами в ближайшее время.', '#16a34a');
                 leadForm.reset();
                 if (leadPage) leadPage.value = location.href;
                 setLeadFileStatus('');
                 setLeadFileSelected(false);
                 setSelectedFiles([]);
             } catch (err) {
-                setLeadStatus(`Ошибка отправки: ${err?.message || err}`, '#b91c1c');
+                setLeadStatus(`Не удалось отправить заявку: ${err?.message || err}. Вы можете отправить данные через Telegram ниже.`, '#b91c1c');
+                showAltSend();
             } finally {
                 if (submitBtn) {
                     submitBtn.disabled = false;
