@@ -8,9 +8,9 @@
 
 Лендинг опубликован в репозитории GitHub и доступен по ссылке:
 
-**https://zandrey501-star.github.io/Reversprom/**
+**https://alksndrkzntsv.github.io/Reversprom/**
 
-Репозиторий: **https://github.com/zandrey501-star/Reversprom**
+Репозиторий: **https://github.com/AlksndrKzntsv/Reversprom**
 
 Это самый удобный способ для теста коллегам — достаточно открыть ссылку в браузере, без распаковки архива и без локального сервера. Форма заявки отправляет данные в собственную функцию Yandex Cloud (см. `DEPLOY.md`) и работает без VPN; при открытии `index.html` двойным кликом (`file://`) отправка может не работать.
 

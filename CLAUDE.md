@@ -31,4 +31,4 @@ python3 make_logo_variants.py        # только Pillow, без обраще�
 
 ## Публикация
 
-`.github/workflows/pages.yml` при каждом push в `main` публикует **весь корень репозитория** как есть на GitHub Pages (https://zandrey501-star.github.io/Reversprom/). Всё, что закоммичено в корень, становится публично доступным — никогда не коммитьте `.env` (он уже в `.gitignore`).
+`.github/workflows/pages.yml` при каждом push в `main` публикует **весь корень репозитория** как есть на GitHub Pages (https://alksndrkzntsv.github.io/Reversprom/). Всё, что закоммичено в корень, становится публично доступным — никогда не коммитьте `.env` (он уже в `.gitignore`).

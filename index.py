@@ -46,7 +46,7 @@ S3_SECRET_KEY = os.environ.get("S3_SECRET_KEY", "")
 S3_HOST = os.environ.get("S3_HOST", "storage.yandexcloud.net")
 S3_REGION = os.environ.get("S3_REGION", "ru-central1")
 
-# --- CORS: адрес сайта, например "https://zandrey501-star.github.io" (без пути и слэша в конце).
+# --- CORS: адрес сайта, например "https://alksndrkzntsv.github.io" (без пути и слэша в конце).
 # Можно указать несколько через запятую (например, ещё http://localhost:8080 для проверки).
 ALLOWED_ORIGINS = [o.strip() for o in os.environ.get("ALLOWED_ORIGIN", "").split(",") if o.strip()]
 

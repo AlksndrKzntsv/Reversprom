@@ -44,7 +44,7 @@
    - Доступ на чтение объектов, к списку объектов и настройкам: **ограниченный** (все три).
    - Класс хранилища: стандартное. Максимальный размер: например, 1 ГБ.
 2. **Бакет → Безопасность → CORS → Настроить** — добавьте правило:
-   - Allowed Origins: адрес сайта на GitHub Pages — `https://alksndrkzntsv.github.io` (форк) и/или `https://zandrey501-star.github.io` (основной репозиторий);
+   - Allowed Origins: адрес сайта на GitHub Pages — `https://alksndrkzntsv.github.io`;
      для локальной проверки — `http://localhost:8080`. Указывается только схема и домен, без `/Reversprom`;
    - Allowed Methods: `PUT`;
    - Allowed Headers: `Content-Type`;
@@ -104,7 +104,7 @@
 
 ## 6. Проверка
 
-1. Откройте сайт на GitHub Pages (https://alksndrkzntsv.github.io/Reversprom/ или https://zandrey501-star.github.io/Reversprom/) и отправьте заявку:
+1. Откройте сайт на GitHub Pages (https://alksndrkzntsv.github.io/Reversprom/) и отправьте заявку:
    - без файлов;
    - с несколькими файлами (фото, PDF, STEP), в том числе с русскими именами, всего 5–10 МБ.
 2. Письма должны прийти на все адреса из `TO_EMAILS`, с вложениями.
