@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Реверспром | Реверс-инжиниринг деталей по образцу</title>
+    <meta name="description" content="Реверспром: 3D-сканирование, чертежи, техкарты и производство деталей по образцу. От 1 штуки до серии, полный цикл 5–15 дней.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --paper: #f4f6f9;
+            --paper-2: #e6eaf0;
+            --white: #ffffff;
+            --ink: #111827;
+            --text: #1f2937;
+            --muted: #5b6574;
+            --line: #dde2e9;
+            --accent: #1b4f9c;
+            --accent-dark: #143d7a;
+            --accent-bg: #e9f0fa;
+            --dark: #111827;
+            --dark-line: rgba(255, 255, 255, 0.14);
+            --mono: 'JetBrains Mono', ui-monospace, monospace;
+        }
+
+        html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+
+        body {
+            font-family: 'Onest', sans-serif;
+            background: var(--paper);
+            color: var(--text);
+            line-height: 1.55;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            * { transition: none !important; }
+        }
+
+        img { max-width: 100%; display: block; }
+
+        .container {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        h1, h2, h3 {
+            color: var(--ink);
+            line-height: 1.08;
+            letter-spacing: -0.02em;
+        }
+
+        h1 { font-size: 4rem; font-weight: 800; letter-spacing: -0.035em; }
+        h2 { font-size: 2.6rem; font-weight: 800; }
+        h3 { font-size: 1.2rem; font-weight: 700; line-height: 1.25; }
+
+        .mono { font-family: var(--mono); }
+
+        .label {
+            font-family: var(--mono);
+            font-size: 0.78rem;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .label b { color: var(--accent); font-weight: 600; }
+
+        .section { padding: 6.5rem 0; }
+        .section-white { background: var(--white); }
+
+        .section-top {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: end;
+            padding-bottom: 2rem;
+            margin-bottom: 3rem;
+            border-bottom: 2px solid var(--ink);
+        }
+
+        .section-top .label { margin-bottom: 1rem; }
+        .section-top p { color: var(--muted); font-size: 1.08rem; max-width: 520px; }
+
+        /* Кнопки */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            line-height: 1.2;
+            padding: 0.95rem 1.6rem;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+        }
+
+        .btn-accent { background: var(--accent); color: #fff; }
+        .btn-accent:hover { background: var(--accent-dark); }
+
+        .btn-dark { background: var(--ink); color: #fff; }
+        .btn-dark:hover { background: #000; }
+
+        .btn-line { border-color: var(--ink); color: var(--ink); background: transparent; }
+        .btn-line:hover { background: var(--ink); color: #fff; }
+
+        .btn-outline { border-color: var(--line); color: var(--ink); background: var(--white); }
+        .btn-outline:hover { border-color: var(--ink); }
+
+        .btn:focus-visible, a:focus-visible, summary:focus-visible, button:focus-visible {
+            outline: 3px solid var(--accent);
+            outline-offset: 3px;
+        }
+
+        /* Шапка */
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(244, 246, 249, 0.94);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--line);
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 68px;
+            gap: 1.5rem;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-weight: 800;
+            font-size: 1.25rem;
+            letter-spacing: 0.05em;
+            color: var(--ink);
+            text-decoration: none;
+        }
+
+        .logo::before {
+            content: "";
+            width: 14px;
+            height: 14px;
+            background: var(--accent);
+        }
+
+        .nav-links { display: flex; align-items: center; gap: 1.8rem; }
+
+        .nav-links a:not(.btn) {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .nav-links a:not(.btn):hover { color: var(--accent); }
+
+        .nav-phone { font-family: var(--mono); font-size: 0.9rem !important; }
+        .nav-cta { padding: 0.6rem 1.1rem; font-size: 0.95rem; }
+
+        /* Первый экран */
+        .hero { padding: 4rem 0 0; }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.05fr 0.95fr;
+            gap: 3.5rem;
+            align-items: stretch;
+        }
+
+        .hero-text {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2rem 0;
+        }
+
+        .hero-text .label { margin-bottom: 1.6rem; }
+        .hero h1 { margin-bottom: 1.6rem; }
+        .hero h1 span { color: var(--accent); }
+
+        .hero-lead {
+            font-size: 1.2rem;
+            max-width: 540px;
+            margin-bottom: 2.2rem;
+        }
+
+        .hero-actions { display: flex; flex-wrap: wrap; gap: 0.8rem; }
+
+        .hero-mosaic {
+            display: grid;
+            grid-template-columns: 1.15fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 12px;
+            min-height: 560px;
+        }
+
+        .hero-mosaic figure {
+            position: relative;
+            margin: 0;
+            border-radius: 10px;
+            overflow: hidden;
+            background: var(--paper-2);
+        }
+
+        .hero-mosaic figure:first-child { grid-row: span 2; }
+
+        .hero-mosaic img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hero-mosaic figure.render { background: var(--white); border: 1px solid var(--line); }
+        .hero-mosaic figure.render img { object-fit: contain; padding: 12px 12px 40px; }
+
+        .hero-mosaic figcaption {
+            position: absolute;
+            left: 10px;
+            bottom: 10px;
+            background: rgba(255, 255, 255, 0.94);
+            padding: 0.35rem 0.6rem;
+            border-radius: 6px;
+            font-family: var(--mono);
+            font-size: 0.72rem;
+            color: var(--ink);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            margin-top: 3.5rem;
+            border-top: 2px solid var(--ink);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .stats div {
+            padding: 1.6rem 1.5rem 1.6rem 0;
+            border-right: 1px solid var(--line);
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        .stats div + div { padding-left: 1.5rem; }
+        .stats div:last-child { border-right: 0; }
+
+        .stats strong {
+            display: block;
+            font-family: var(--mono);
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--ink);
+            letter-spacing: -0.03em;
+            margin-bottom: 0.2rem;
+            white-space: nowrap;
+        }
+
+        /* Ситуации */
+        .problems { border-top: 1px solid var(--line); }
+
+        .problem {
+            display: grid;
+            grid-template-columns: 90px 1fr 1.3fr;
+            gap: 2rem;
+            padding: 2rem 0;
+            border-bottom: 1px solid var(--line);
+            align-items: baseline;
+        }
+
+        .problem .num {
+            font-family: var(--mono);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .problem h3 { font-size: 1.4rem; }
+        .problem p { color: var(--muted); font-size: 1.05rem; }
+
+        /* Услуги: сравнение */
+        .table-wrap {
+            overflow-x: auto;
+            background: var(--white);
+            border: 1px solid var(--line);
+            border-radius: 4px;
+        }
+
+        .compare {
+            width: 100%;
+            min-width: 720px;
+            border-collapse: collapse;
+        }
+
+        .compare th, .compare td {
+            padding: 1.05rem 1.3rem;
+            border-bottom: 1px solid var(--line);
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .compare th:first-child, .compare td:first-child {
+            text-align: left;
+            width: 34%;
+        }
+
+        .compare thead th {
+            vertical-align: top;
+            padding-top: 1.8rem;
+            padding-bottom: 1.6rem;
+            border-bottom: 2px solid var(--ink);
+        }
+
+        .compare thead th .label { display: block; margin-bottom: 0.5rem; }
+        .compare thead th h3 { margin-bottom: 0.4rem; }
+
+        .compare thead th p {
+            font-weight: 400;
+            font-size: 0.9rem;
+            color: var(--muted);
+            line-height: 1.45;
+        }
+
+        .compare .col-featured { background: var(--accent-bg); }
+        .compare thead .col-featured { border-top: 4px solid var(--accent); }
+
+        .compare td i.fa-check { color: var(--accent); }
+        .compare td .no { color: #b7c0cc; }
+        .compare tbody tr:last-child td { border-bottom: 0; }
+        .compare tfoot td { border-bottom: 0; padding: 1.4rem 1.3rem 1.8rem; }
+        .compare tfoot .btn { width: 100%; }
+
+        .table-hint { display: none; font-size: 0.85rem; color: var(--muted); margin-bottom: 0.6rem; }
+
+        .compare tfoot td:first-child {
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+
+        /* Работы */
+        .filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.8rem; }
+
+        .filter {
+            font: inherit;
+            font-size: 0.92rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 999px;
+            border: 1px solid var(--line);
+            background: var(--white);
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        .filter:hover { border-color: var(--accent); }
+        .filter.active { background: var(--ink); border-color: var(--ink); color: #fff; }
+
+        .works {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.25rem;
+        }
+
+        .work[hidden] { display: none; }
+
+        .work {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--line);
+            padding: 0;
+            font: inherit;
+            text-align: left;
+            color: inherit;
+            cursor: pointer;
+            border-radius: 10px;
+            overflow: hidden;
+            background: var(--white);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .work:hover { border-color: #b9c6da; box-shadow: 0 18px 36px -24px rgba(17, 24, 39, 0.4); }
+
+        .work-img { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: var(--paper-2); }
+
+        .work-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .work.render .work-img { background: var(--white); border-bottom: 1px solid var(--line); }
+        .work.render .work-img img { object-fit: contain; padding: 1.2rem; }
+        .work:hover .work-img img { transform: scale(1.04); }
+
+        .work-kind {
+            position: absolute;
+            left: 12px;
+            top: 12px;
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 0.25rem 0.55rem;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.94);
+            color: var(--ink);
+            border: 1px solid var(--line);
+        }
+
+        .work-info {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 1.1rem 1.3rem 1.3rem;
+            flex: 1;
+        }
+
+        .work-info h3 { font-size: 1.1rem; }
+        .work-info .meta { font-size: 0.88rem; color: var(--muted); margin-top: 0.3rem; }
+
+        .work-count {
+            flex-shrink: 0;
+            font-family: var(--mono);
+            font-size: 0.78rem;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+
+        .work.cta {
+            justify-content: space-between;
+            padding: 1.6rem;
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+            text-decoration: none;
+            min-height: 260px;
+        }
+
+        .work.cta:hover { background: var(--accent-dark); }
+        .work.cta i { font-size: 1.4rem; }
+        .work.cta h3 { color: #fff; font-size: 1.35rem; margin-bottom: 0.4rem; }
+        .work.cta p { color: rgba(255, 255, 255, 0.85); }
+
+        /* Процесс */
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1.25rem;
+        }
+
+        .step {
+            background: var(--white);
+            border-radius: 4px;
+            padding: 1.6rem 1.4rem;
+            border-top: 3px solid var(--ink);
+        }
+
+        .step .num {
+            font-family: var(--mono);
+            font-size: 2.4rem;
+            font-weight: 600;
+            color: var(--paper-2);
+            -webkit-text-stroke: 1px var(--line);
+            line-height: 1;
+            margin-bottom: 1.2rem;
+        }
+
+        .step:hover { border-top-color: var(--accent); }
+        .step p { color: var(--muted); font-size: 0.95rem; }
+
+        .step .out {
+            margin-top: 1rem;
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            color: var(--accent-dark);
+        }
+
+        /* Технические данные */
+        .spec {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0 4rem;
+        }
+
+        .spec-row {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            gap: 1.5rem;
+            padding: 1.3rem 0;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .spec-row dt {
+            font-family: var(--mono);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--muted);
+            padding-top: 0.2rem;
+        }
+
+        .spec-row dd { color: var(--ink); font-weight: 500; }
+
+        /* FAQ */
+        .faq {
+            display: grid;
+            grid-template-columns: 0.75fr 1.25fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        .faq-side h2 { margin: 1rem 0; }
+        .faq-side p { color: var(--muted); }
+        .faq-side a { color: var(--accent-dark); }
+
+        .faq-list details {
+            border-bottom: 1px solid var(--line);
+        }
+
+        .faq-list details:first-child { border-top: 2px solid var(--ink); }
+
+        .faq-list summary {
+            list-style: none;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            gap: 1.5rem;
+            padding: 1.4rem 0;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--ink);
+        }
+
+        .faq-list summary::-webkit-details-marker { display: none; }
+
+        .faq-list summary::after {
+            content: "\f067";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            font-size: 0.85rem;
+            color: var(--accent);
+            padding-top: 0.25rem;
+            transition: transform 0.2s;
+        }
+
+        .faq-list details[open] summary::after { transform: rotate(45deg); }
+
+        .faq-list details p {
+            color: var(--muted);
+            padding: 0 3rem 1.5rem 0;
+            font-size: 1.02rem;
+        }
+
+        /* Заявка */
+        .contact-section {
+            background: var(--dark);
+            color: #c7cfdb;
+        }
+
+        .contact {
+            display: grid;
+            grid-template-columns: 0.9fr 1.1fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        .contact-section h2 { color: #fff; margin: 1rem 0 1.2rem; }
+        .contact-section .label { color: #8b95a5; }
+        .contact-lead { font-size: 1.1rem; margin-bottom: 2.4rem; }
+
+        .send-list { list-style: none; margin-bottom: 2.4rem; }
+
+        .send-list li {
+            display: flex;
+            gap: 0.9rem;
+            padding: 0.9rem 0;
+            border-bottom: 1px solid var(--dark-line);
+        }
+
+        .send-list li:first-child { border-top: 1px solid var(--dark-line); }
+        .send-list i { color: var(--accent); width: 1.2rem; padding-top: 0.25rem; }
+        .send-list strong { color: #fff; font-weight: 600; }
+
+        .direct { display: flex; flex-direction: column; gap: 0.6rem; }
+
+        .direct a {
+            color: #fff;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.7rem;
+            font-weight: 500;
+        }
+
+        .direct a:hover { color: var(--accent); }
+        .direct i { color: var(--accent); width: 1.2rem; }
+
+        .contact-form {
+            background: var(--white);
+            color: var(--text);
+            padding: 2.4rem;
+            border-radius: 4px;
+        }
+
+        .contact-form label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .contact-form .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 0.85rem 0.95rem;
+            margin-top: 0.4rem;
+            margin-bottom: 1.2rem;
+            border: 1px solid var(--line);
+            border-radius: 3px;
+            background: #f8fafc;
+            font-family: inherit;
+            font-size: 1rem;
+            color: var(--ink);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(27, 79, 156, 0.15);
+            background: #fff;
+        }
+
+        .file-drop {
+            border: 1.5px dashed #b7c0cc;
+            border-radius: 3px;
+            padding: 1.5rem;
+            text-align: center;
+            margin: 0.4rem 0 0.5rem;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .file-drop:hover, .file-drop.is-dragover {
+            border-color: var(--accent);
+            background: var(--accent-bg);
+        }
+
+        .file-drop i { font-size: 1.6rem; color: var(--accent); margin-bottom: 0.6rem; }
+        .file-drop .hint { font-size: 0.78rem; color: var(--muted); margin-top: 0.35rem; }
+
+        .form-consent {
+            font-size: 0.78rem;
+            color: var(--muted);
+            margin-top: 0.8rem;
+        }
+
+        /* Подвал */
+        footer {
+            background: var(--dark);
+            color: #8b95a5;
+            border-top: 1px solid var(--dark-line);
+            padding: 2.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .footer-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        footer .logo { color: #fff; }
+        footer nav { height: auto; gap: 1.5rem; flex-wrap: wrap; justify-content: flex-start; }
+        footer a { color: #c7cfdb; text-decoration: none; }
+        footer a:hover { color: #fff; }
+
+        /* Просмотр фото */
+        .lightbox[hidden] { display: none !important; }
+
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(10, 15, 25, 0.94);
+            display: flex;
+            flex-direction: column;
+            padding: 16px;
+        }
+
+        .lb-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            color: #fff;
+            padding: 0.4rem 0.4rem 1rem;
+        }
+
+        .lb-title { font-weight: 700; font-size: 1.1rem; }
+        .lb-counter { font-family: var(--mono); font-size: 0.8rem; color: #8b95a5; margin-left: 0.8rem; font-weight: 400; }
+
+        .lb-stage {
+            flex: 1;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 56px 1fr 56px;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .lb-stage figure {
+            height: 100%;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+
+        .lb-stage img {
+            max-width: 100%;
+            max-height: calc(100% - 2.5rem);
+            object-fit: contain;
+            border-radius: 3px;
+            background: #fff;
+        }
+
+        .lb-stage figcaption {
+            margin-top: 0.8rem;
+            font-family: var(--mono);
+            font-size: 0.82rem;
+            color: #c7cfdb;
+            text-align: center;
+        }
+
+        .lb-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            background: transparent;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+        }
+
+        .lb-btn:hover { background: rgba(255, 255, 255, 0.1); }
+        .lb-btn[disabled] { opacity: 0.25; cursor: default; }
+
+        /* Адаптивность */
+        @media (max-width: 1080px) {
+            h1 { font-size: 3.1rem; }
+            h2 { font-size: 2.2rem; }
+            .nav-phone { display: none; }
+            .hero-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+            .hero-mosaic { min-height: 440px; }
+            .steps { grid-template-columns: repeat(2, 1fr); }
+            .works { grid-template-columns: repeat(2, 1fr); }
+            .spec { grid-template-columns: 1fr; }
+            .faq, .contact { grid-template-columns: 1fr; gap: 2.5rem; }
+        }
+
+        @media (max-width: 800px) {
+            .container { padding: 0 16px; }
+            h1 { font-size: 2.3rem; }
+            h2 { font-size: 1.8rem; }
+            .section { padding: 4.5rem 0; }
+            .nav-links a:not(.btn) { display: none; }
+            .hero { padding-top: 1.5rem; }
+            .hero-text { padding: 0.5rem 0 1rem; }
+            .hero-lead { font-size: 1.05rem; }
+            .hero-actions .btn { width: 100%; }
+            .hero-mosaic { min-height: 360px; gap: 8px; }
+            .stats { grid-template-columns: 1fr 1fr; }
+            .stats div { padding: 1.2rem 0.8rem 1.2rem 0; }
+            .stats div + div { padding-left: 0; }
+            .stats div:nth-child(2n) { padding-left: 1rem; border-right: 0; }
+            .stats div:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+            .stats strong { font-size: 1.5rem; }
+            .section-top { grid-template-columns: 1fr; gap: 1rem; }
+            .problem { grid-template-columns: 1fr; gap: 0.5rem; padding: 1.5rem 0; }
+            .works { grid-template-columns: 1fr; }
+            .table-hint { display: block; }
+            .compare th:first-child, .compare td:first-child { min-width: 200px; }
+            .steps { grid-template-columns: 1fr; }
+            .spec-row { grid-template-columns: 1fr; gap: 0.3rem; }
+            .faq-list details p { padding-right: 0; }
+            .contact-form { padding: 1.4rem; }
+            .contact-form .row { grid-template-columns: 1fr; gap: 0; }
+            .lb-stage { grid-template-columns: 1fr; }
+            .lb-stage .lb-btn { display: none; }
+            .lb-nav-mobile { display: flex !important; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="site-header">
+    <div class="container">
+        <nav>
+            <a href="#" class="logo">РЕВЕРСПРОМ</a>
+            <div class="nav-links">
+                <a href="#works">Работы</a>
+                <a href="#services">Услуги</a>
+                <a href="#process">Этапы</a>
+                <a href="#faq">Вопросы</a>
+                <a href="tel:+79991234567" class="nav-phone">+7 (999) 123-45-67</a>
+                <a href="#contact" class="btn btn-accent nav-cta">Оценить деталь</a>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<main>
+    <noscript>
+        <div class="container" style="padding: 1rem 24px; background: #fff7ed; border: 1px solid #fed7aa; margin: 1rem auto;">
+            Для отправки заявки включите JavaScript или напишите нам в Telegram: @reversprom_eng.
+        </div>
+    </noscript>
+
+    <!-- Первый экран -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-grid">
+                <div class="hero-text">
+                    <div class="label"><b>■</b>&nbsp; Реверс-инжиниринг и производство</div>
+                    <h1>Изготовим деталь, которой <span>больше нет в продаже</span></h1>
+                    <p class="hero-lead">По образцу, фото или изношенному узлу: сканирование, 3D-модель, чертежи и изготовление от 1 штуки. Без чертежей от производителя и без полугода ожидания поставки.</p>
+                    <div class="hero-actions">
+                        <a href="#contact" class="btn btn-accent"><i class="fas fa-camera" aria-hidden="true"></i> Прислать фото детали</a>
+                        <a href="#works" class="btn btn-line">Смотреть работы</a>
+                    </div>
+                </div>
+                <div class="hero-mosaic">
+                    <figure><img src="Pictures/Planetary%20Gear/Planetary%20Gear%20photo.jpg" alt="Изготовленные детали планетарного редуктора" style="object-position: center 42%;"><figcaption>Детали редуктора</figcaption></figure>
+                    <figure><img src="Pictures/Pneumatic%20Panel/Pneumatic%20Panel%20photo.jpg" alt="Пневмопанель управления"><figcaption>Пневмопанель</figcaption></figure>
+                    <figure class="render"><img src="Pictures/Turbine/Turbine%20side.png" alt="3D-модель лопаточного кольца турбины"><figcaption>3D-модель</figcaption></figure>
+                </div>
+            </div>
+            <div class="stats">
+                <div><strong>±0,05 мм</strong>точность сканирования</div>
+                <div><strong>от 1 шт</strong>минимальный заказ</div>
+                <div><strong>5–15 дн</strong>полный цикл работ</div>
+                <div><strong>12 мес</strong>гарантия на детали</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Когда обращаются -->
+    <section class="section section-white">
+        <div class="container">
+            <div class="section-top">
+                <div>
+                    <div class="label"><b>01</b> / Когда к нам обращаются</div>
+                    <h2>Станок стоит, а детали нет</h2>
+                </div>
+                <p>Простой оборудования обходится дороже, чем восстановление детали. Беремся за задачи, где у производителя нет готового решения.</p>
+            </div>
+            <div class="problems">
+                <div class="problem"><div class="num">— 01</div><h3>Оригинал недоступен</h3><p>Импортная деталь снята с производства или не поставляется, а новый узел стоит как крыло самолёта и едет полгода.</p></div>
+                <div class="problem"><div class="num">— 02</div><h3>Нет документации</h3><p>Старое или импортное оборудование: чертежи утеряны или их никогда не было.</p></div>
+                <div class="problem"><div class="num">— 03</div><h3>Деталь постоянно ломается</h3><p>Сделаем прочнее оригинала: подберём материал, изменим конструкцию, добавим рёбра жёсткости.</p></div>
+                <div class="problem"><div class="num">— 04</div><h3>Есть станки, нет конструктора</h3><p>Подготовим 3D-модель, чертежи и техкарту — изготовите деталь на своём производстве.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Работы -->
+    <section id="works" class="section">
+        <div class="container">
+            <div class="section-top">
+                <div>
+                    <div class="label"><b>02</b> / Портфолио</div>
+                    <h2>Наши работы</h2>
+                </div>
+                <p>Фотографии готовых изделий и 3D-модели из наших проектов. Нажмите на карточку, чтобы посмотреть все материалы.</p>
+            </div>
+            <div class="filters" role="group" aria-label="Фильтр работ">
+                <button type="button" class="filter active" data-filter="all" aria-pressed="true">Все работы</button>
+                <button type="button" class="filter" data-filter="photo" aria-pressed="false">Готовые изделия</button>
+                <button type="button" class="filter" data-filter="model" aria-pressed="false">3D-модели</button>
+            </div>
+            <div class="works" id="works-grid">
+                <button type="button" class="work" data-set="gear" data-kind="photo">
+                    <div class="work-img"><img src="Pictures/Planetary%20Gear/Planetary%20Gear%20photo.jpg" alt="Детали планетарного редуктора" loading="lazy" style="object-position: center 42%;"><span class="work-kind">Изделие</span></div>
+                    <div class="work-info"><div><h3>Детали планетарного редуктора</h3><div class="meta">Изготовление</div></div><span class="work-count"><i class="fas fa-images" aria-hidden="true"></i> 1</span></div>
+                </button>
+                <button type="button" class="work" data-set="drum" data-kind="photo">
+                    <div class="work-img"><img src="Pictures/Drum%20Grid/Drum%20Grid%20photo%203.jpg" alt="Барабан барабанной решётки" loading="lazy" style="object-position: center 45%;"><span class="work-kind">Изделие</span></div>
+                    <div class="work-info"><div><h3>Барабанная решётка</h3><div class="meta">Модель, чертежи, изготовление</div></div><span class="work-count"><i class="fas fa-images" aria-hidden="true"></i> 7</span></div>
+                </button>
+                <button type="button" class="work" data-set="panel" data-kind="photo">
+                    <div class="work-img"><img src="Pictures/Pneumatic%20Panel/Pneumatic%20Panel%20photo.jpg" alt="Пневматическая панель управления" loading="lazy"><span class="work-kind">Изделие</span></div>
+                    <div class="work-info"><div><h3>Пневмопанель управления</h3><div class="meta">Сборка</div></div><span class="work-count"><i class="fas fa-images" aria-hidden="true"></i> 1</span></div>
+                </button>
+                <button type="button" class="work render" data-set="distributor" data-kind="model">
+                    <div class="work-img"><img src="Pictures/Pneumatic%20Distributor/Pneumo%20Distributor%20front%20left.png" alt="Пневматический распределитель, 3D-модель" loading="lazy"><span class="work-kind">3D-модель</span></div>
+                    <div class="work-info"><div><h3>Пневматический распределитель</h3><div class="meta">3D-модель, документация</div></div><span class="work-count"><i class="fas fa-images" aria-hidden="true"></i> 3</span></div>
+                </button>
+                <button type="button" class="work render" data-set="turbine" data-kind="model">
+                    <div class="work-img"><img src="Pictures/Turbine/Turbine%20side.png" alt="Лопаточное кольцо турбины, 3D-модель" loading="lazy"><span class="work-kind">3D-модель</span></div>
+                    <div class="work-info"><div><h3>Турбина</h3><div class="meta">3D-модель, документация</div></div><span class="work-count"><i class="fas fa-images" aria-hidden="true"></i> 3</span></div>
+                </button>
+                <a href="#contact" class="work cta" data-kind="cta">
+                    <i class="fas fa-plus" aria-hidden="true"></i>
+                    <div><h3>Здесь может быть ваша деталь</h3><p>Пришлите фото — оценим задачу</p></div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Услуги -->
+    <section id="services" class="section section-white">
+        <div class="container">
+            <div class="section-top">
+                <div>
+                    <div class="label"><b>03</b> / Услуги</div>
+                    <h2>Выберите объём работ</h2>
+                </div>
+                <p>Стоимость зависит от сложности детали, материала и количества — рассчитываем индивидуально после оценки.</p>
+            </div>
+            <p class="table-hint">Таблицу можно прокрутить вбок →</p>
+            <div class="table-wrap">
+                <table class="compare">
+                    <thead>
+                        <tr>
+                            <th scope="col"><span class="label">Что входит</span></th>
+                            <th scope="col"><span class="label">Инжиниринг</span><h3>Только документация</h3><p>Есть производство, нет конструктора</p></th>
+                            <th scope="col" class="col-featured"><span class="label"><b>Под ключ</b></span><h3>Документация + деталь</h3><p>Срочный ремонт оборудования</p></th>
+                            <th scope="col"><span class="label">Оптимизация</span><h3>Усиление образца</h3><p>Деталь регулярно выходит из строя</p></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>3D-сканирование образца</td><td><i class="fas fa-check" aria-label="Да"></i></td><td class="col-featured"><i class="fas fa-check" aria-label="Да"></i></td><td><i class="fas fa-check" aria-label="Да"></i></td></tr>
+                        <tr><td>3D-модель и чертежи</td><td><i class="fas fa-check" aria-label="Да"></i></td><td class="col-featured"><i class="fas fa-check" aria-label="Да"></i></td><td><i class="fas fa-check" aria-label="Да"></i></td></tr>
+                        <tr><td>Техкарта с маршрутом обработки</td><td><i class="fas fa-check" aria-label="Да"></i></td><td class="col-featured"><i class="fas fa-check" aria-label="Да"></i></td><td><i class="fas fa-check" aria-label="Да"></i></td></tr>
+                        <tr><td>Изготовление от 1 штуки до серии</td><td><span class="no" aria-label="Нет">—</span></td><td class="col-featured"><i class="fas fa-check" aria-label="Да"></i></td><td><i class="fas fa-check" aria-label="Да"></i></td></tr>
+                        <tr><td>Доставка по России</td><td><span class="no" aria-label="Нет">—</span></td><td class="col-featured"><i class="fas fa-check" aria-label="Да"></i></td><td><i class="fas fa-check" aria-label="Да"></i></td></tr>
+                        <tr><td>Подбор более стойкого материала</td><td><span class="no" aria-label="Нет">—</span></td><td class="col-featured"><span class="no" aria-label="Нет">—</span></td><td><i class="fas fa-check" aria-label="Да"></i></td></tr>
+                        <tr><td>Доработка конструкции, рёбра жёсткости</td><td><span class="no" aria-label="Нет">—</span></td><td class="col-featured"><span class="no" aria-label="Нет">—</span></td><td><i class="fas fa-check" aria-label="Да"></i></td></tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td>Стоимость — по запросу</td>
+                            <td><a href="#contact" class="btn btn-line">Рассчитать</a></td>
+                            <td class="col-featured"><a href="#contact" class="btn btn-accent">Рассчитать</a></td>
+                            <td><a href="#contact" class="btn btn-line">Рассчитать</a></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Этапы -->
+    <section id="process" class="section">
+        <div class="container">
+            <div class="section-top">
+                <div>
+                    <div class="label"><b>04</b> / Этапы работы</div>
+                    <h2>Пять шагов до готовой детали</h2>
+                </div>
+                <p>Полный цикл — от 5 до 15 дней в зависимости от сложности и загрузки. Можно заказать только нужные этапы.</p>
+            </div>
+            <div class="steps">
+                <div class="step"><div class="num">01</div><h3>Заявка</h3><p>Присылаете фото, размеры и количество.</p><div class="out">→ сроки и стоимость</div></div>
+                <div class="step"><div class="num">02</div><h3>Сканирование</h3><p>Привозите или отправляете образец, сканируем с точностью до 0,05 мм.</p><div class="out">→ цифровая копия</div></div>
+                <div class="step"><div class="num">03</div><h3>Документация</h3><p>3D-модель, чертежи и техкарта с маршрутом обработки.</p><div class="out">→ STEP, DWG, PDF</div></div>
+                <div class="step"><div class="num">04</div><h3>Производство</h3><p>Изготавливаем на ЧПУ или подбираем площадку под бюджет.</p><div class="out">→ деталь или партия</div></div>
+                <div class="step"><div class="num">05</div><h3>Доставка</h3><p>Отправляем по России. Гарантия на детали — 12 месяцев.</p><div class="out">→ деталь на объекте</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Технические данные -->
+    <section class="section section-white">
+        <div class="container">
+            <div class="section-top">
+                <div>
+                    <div class="label"><b>05</b> / Технические возможности</div>
+                    <h2>Оборудование и форматы</h2>
+                </div>
+                <p>Передаём документацию в тех форматах, с которыми работает ваше производство.</p>
+            </div>
+            <dl class="spec">
+                <div class="spec-row"><dt>Сканирование</dt><dd>3D-сканеры Artec и RangeVision</dd></div>
+                <div class="spec-row"><dt>Контроль</dt><dd>Координатно-измерительная машина, оптические приборы</dd></div>
+                <div class="spec-row"><dt>Точность</dt><dd>до ±0,05 мм</dd></div>
+                <div class="spec-row"><dt>Партия</dt><dd>от 1 штуки до серии</dd></div>
+                <div class="spec-row"><dt>Форматы</dt><dd class="mono">.stp .dwg .dxf .cdw .pdf .stl</dd></div>
+                <div class="spec-row"><dt>Материалы</dt><dd>Сталь 45, 40Х, чугун, алюминий, бронза, пластики POM и PA6</dd></div>
+            </dl>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="section">
+        <div class="container faq">
+            <div class="faq-side">
+                <div class="label"><b>06</b> / Вопросы</div>
+                <h2>Частые вопросы</h2>
+                <p>Не нашли ответ? Напишите в <a href="https://t.me/reversprom_eng" target="_blank" rel="noopener">Telegram</a> — инженер ответит.</p>
+            </div>
+            <div class="faq-list">
+                <details><summary>Что прислать для первичной оценки?</summary><p>Фото детали с нескольких сторон (лучше рядом с линейкой), основные размеры, количество и желаемый срок. Если известны материал и условия работы детали — тоже укажите.</p></details>
+                <details><summary>Законно ли изготавливать деталь по образцу?</summary><p>Да, если вы владелец оборудования и восстанавливаете его работоспособность. Мы не копируем запатентованные изделия для перепродажи под видом оригинальных.</p></details>
+                <details><summary>Какая минимальная партия?</summary><p>От 1 штуки. Единичное изготовление — наша специализация, серию тоже сделаем.</p></details>
+                <details><summary>Что делать, если деталь сложной формы?</summary><p>3D-сканер и опыт инженеров позволяют восстановить сложную криволинейную геометрию: лопатки, корпуса, литые детали.</p></details>
+                <details><summary>Сколько времени занимает полный цикл?</summary><p>От 5 до 15 дней в зависимости от сложности и загрузки. Точный срок назовём после оценки.</p></details>
+                <details><summary>Вы изготавливаете сами или через партнёров?</summary><p>Можем изготовить сами на ЧПУ или подобрать производственную площадку под ваш бюджет и требования. Если у вас своё производство — передадим только документацию.</p></details>
+            </div>
+        </div>
+    </section>
+
+    <!-- Заявка -->
+    <section id="contact" class="section contact-section">
+        <div class="container contact">
+            <div>
+                <div class="label"><b>07</b> / Заявка</div>
+                <h2>Оценим вашу деталь</h2>
+                <p class="contact-lead">Чем больше информации, тем точнее первичная оценка сроков и стоимости.</p>
+                <ul class="send-list">
+                    <li><i class="fas fa-camera" aria-hidden="true"></i><div><strong>Фото с нескольких сторон</strong> — лучше рядом с линейкой</div></li>
+                    <li><i class="fas fa-ruler-combined" aria-hidden="true"></i><div><strong>Основные размеры</strong> — если есть возможность замерить</div></li>
+                    <li><i class="fas fa-layer-group" aria-hidden="true"></i><div><strong>Количество и срок</strong> — сколько деталей и когда нужны</div></li>
+                </ul>
+                <div class="direct">
+                    <a href="https://t.me/reversprom_eng" target="_blank" rel="noopener"><i class="fab fa-telegram" aria-hidden="true"></i> @reversprom_eng</a>
+                    <a href="tel:+79991234567"><i class="fas fa-phone" aria-hidden="true"></i> +7 (999) 123-45-67</a>
+                    <a href="mailto:info@reversprom.ru"><i class="fas fa-envelope" aria-hidden="true"></i> info@reversprom.ru</a>
+                </div>
+            </div>
+
+            <div class="contact-form">
+                <form id="leadForm" action="#" method="POST">
+                    <div class="row">
+                        <div>
+                            <label for="leadName">Ваше имя</label>
+                            <input id="leadName" name="name" type="text" placeholder="Алексей" autocomplete="name" required>
+                        </div>
+                        <div>
+                            <label for="leadContact">Телефон или Telegram</label>
+                            <input id="leadContact" name="contact" type="text" placeholder="+7 999 123-45-67" autocomplete="tel" required>
+                        </div>
+                    </div>
+                    <label for="leadComment">Что за деталь и сколько нужно</label>
+                    <textarea id="leadComment" name="comment" rows="3" placeholder="Шестерня Z=45, нужно 2 шт, есть образец"></textarea>
+                    <label>Фото или чертёж</label>
+                    <div class="file-drop" id="leadFileDrop" role="button" tabindex="0" aria-label="Зона загрузки файла. Нажмите, чтобы выбрать файл или перетащите файл сюда.">
+                        <i class="fas fa-cloud-arrow-up" aria-hidden="true"></i>
+                        <p>Перетащите файлы или <label style="display:inline; color: var(--accent-dark); cursor: pointer; font-size: inherit; font-weight: 600;">выберите на компьютере<input type="file" id="leadFileInput" name="attachment" hidden multiple accept=".jpg,.jpeg,.png,.gif,.webp,.heic,.heif,.bmp,.tif,.tiff,.pdf,.zip,.rar,.7z,.step,.stp,.stl,.dwg,.dxf"></label></p>
+                        <p class="hint">Фото, PDF, чертежи, 3D-модели, архивы — до 10 файлов, всего до 10 МБ</p>
+                    </div>
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; margin-top: 0.5rem;">
+                        <div id="leadFileStatus" style="font-size: 0.8rem;" aria-live="polite"></div>
+                        <button id="leadFileClearBtn" type="button" class="btn btn-outline" style="padding: 0.45rem 1rem; display:none;">Удалить все</button>
+                    </div>
+                    <div id="leadFileList" style="margin: 0.5rem 0 1rem;"></div>
+                    <input type="hidden" name="page" id="leadPage">
+                    <input type="hidden" name="time" id="leadTime">
+                    <!-- Ловушка для ботов: поле скрыто от людей, заполненные им заявки сервер не отправляет -->
+                    <div aria-hidden="true" style="position:absolute; left:-10000px; width:1px; height:1px; overflow:hidden;">
+                        <label for="leadWebsite">Сайт</label>
+                        <input id="leadWebsite" name="website" type="text" tabindex="-1" autocomplete="off">
+                    </div>
+                    <button type="submit" class="btn btn-accent" style="width:100%; padding: 1.05rem;">Отправить заявку</button>
+                    <p class="form-consent">Инженер свяжется с вами в течение 20 минут в рабочее время. Нажимая кнопку, вы соглашаетесь на обработку персональных данных.</p>
+                    <div id="leadStatus" style="font-size: 0.9rem; margin-top: 0.75rem;" aria-live="polite"></div>
+                    <div id="leadAltSend" style="display:none; margin-top:0.75rem; gap:0.6rem; flex-wrap:wrap;">
+                        <a id="leadTelegramLink" class="btn btn-outline" target="_blank" rel="noopener">Отправить в Telegram</a>
+                        <button id="leadCopyTextBtn" type="button" class="btn btn-outline">Скопировать текст заявки</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <div class="container footer-row">
+        <a href="#" class="logo">РЕВЕРСПРОМ</a>
+        <nav aria-label="Разделы">
+            <a href="#works">Работы</a>
+            <a href="#services">Услуги</a>
+            <a href="#process">Этапы</a>
+            <a href="#faq">Вопросы</a>
+            <a href="https://t.me/reversprom_eng" target="_blank" rel="noopener">Telegram</a>
+        </nav>
+        <div>© 2026 РЕВЕРСПРОМ</div>
+    </div>
+</footer>
+
+<!-- Просмотр фото проекта -->
+<div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-labelledby="lbTitle" hidden>
+    <div class="lb-head">
+        <div><span class="lb-title" id="lbTitle"></span><span class="lb-counter" id="lbCounter"></span></div>
+        <button type="button" class="lb-btn" id="lbClose" aria-label="Закрыть"><i class="fas fa-xmark" aria-hidden="true"></i></button>
+    </div>
+    <div class="lb-stage">
+        <button type="button" class="lb-btn" id="lbPrev" aria-label="Предыдущее фото"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
+        <figure><img id="lbImg" alt=""><figcaption id="lbCaption"></figcaption></figure>
+        <button type="button" class="lb-btn" id="lbNext" aria-label="Следующее фото"><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+    </div>
+    <div class="lb-nav-mobile" style="display:none; justify-content:center; gap:0.8rem; padding-top:0.8rem;">
+        <button type="button" class="lb-btn" data-lb="prev" aria-label="Предыдущее фото"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
+        <button type="button" class="lb-btn" data-lb="next" aria-label="Следующее фото"><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+    </div>
+</div>
+
+<script>
+    // Материалы проектов для просмотра: путь к файлу и подпись
+    const P = 'Pictures/';
+    const WORK_SETS = {
+        drum: { title: 'Барабанная решётка', items: [
+            [P + 'Drum%20Grid/Drum%20Grid%20photo%203.jpg', 'Готовый барабан'],
+            [P + 'Drum%20Grid/Drum%20Grid%20photo%202.jpg', 'Готовый барабан, торец'],
+            [P + 'Drum%20Grid/Drum%20Grid%20photo%201.jpg', 'Готовый барабан'],
+            [P + 'Drum%20Grid/Drum%20Grid%20drawing.jpg', 'Сборочный чертёж'],
+            [P + 'Drum%20Grid/Drum%20Grid%20SW.png', '3D-модель в SolidWorks'],
+            [P + 'Drum%20Grid/Drum%20Grid%20Front%20right.png', 'Визуализация 3D-модели'],
+            [P + 'Drum%20Grid/Drum%20Grid%20Back.png', 'Визуализация 3D-модели, вид сзади']
+        ] },
+        gear: { title: 'Детали планетарного редуктора', items: [
+            [P + 'Planetary%20Gear/Planetary%20Gear%20photo.jpg', 'Водило с сателлитами, шестерня и зубчатый венец']
+        ] },
+        panel: { title: 'Пневмопанель управления', items: [
+            [P + 'Pneumatic%20Panel/Pneumatic%20Panel%20photo.jpg', 'Собранная пневмопанель']
+        ] },
+        distributor: { title: 'Пневматический распределитель', items: [
+            [P + 'Pneumatic%20Distributor/Pneumo%20Distributor%20front%20left.png', 'Визуализация 3D-модели'],
+            [P + 'Pneumatic%20Distributor/Pneumo%20Distributor%20back%20left.png', 'Визуализация 3D-модели, вид сзади'],
+            [P + 'Pneumatic%20Distributor/Pneumo%20distributor%20SW.png', '3D-модель в SolidWorks']
+        ] },
+        turbine: { title: 'Турбина', items: [
+            [P + 'Turbine/Turbine%20side.png', 'Визуализация 3D-модели'],
+            [P + 'Turbine/Turbine%20front.png', 'Визуализация 3D-модели, вид спереди'],
+            [P + 'Turbine/Turbine%20SW.png', '3D-модель в SolidWorks']
+        ] }
+    };
+
+    const lightbox = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lbImg');
+    const lbTitle = document.getElementById('lbTitle');
+    const lbCounter = document.getElementById('lbCounter');
+    const lbCaption = document.getElementById('lbCaption');
+    const lbClose = document.getElementById('lbClose');
+    const lbPrev = document.getElementById('lbPrev');
+    const lbNext = document.getElementById('lbNext');
+    let lbSet = null;
+    let lbIndex = 0;
+    let lbLastActive = null;
+
+    function lbShow(i) {
+        const items = lbSet.items;
+        lbIndex = Math.max(0, Math.min(items.length - 1, i));
+        const [src, caption] = items[lbIndex];
+        lbImg.src = src;
+        lbImg.alt = caption;
+        lbCaption.textContent = caption;
+        lbCounter.textContent = items.length > 1 ? `${lbIndex + 1} / ${items.length}` : '';
+        const single = items.length < 2;
+        lightbox.querySelectorAll('#lbPrev, [data-lb="prev"]').forEach(b => { b.disabled = single || lbIndex === 0; });
+        lightbox.querySelectorAll('#lbNext, [data-lb="next"]').forEach(b => { b.disabled = single || lbIndex === items.length - 1; });
+    }
+
+    function lbOpen(setName, index = 0) {
+        lbSet = WORK_SETS[setName];
+        if (!lbSet) return;
+        lbLastActive = document.activeElement;
+        lbTitle.textContent = lbSet.title;
+        lbShow(index);
+        lightbox.hidden = false;
+        document.body.style.overflow = 'hidden';
+        lbClose.focus();
+    }
+
+    function lbCloseFn() {
+        lightbox.hidden = true;
+        document.body.style.overflow = '';
+        if (lbLastActive && typeof lbLastActive.focus === 'function') lbLastActive.focus();
+    }
+
+    // Фильтр работ: все / готовые изделия / 3D-модели
+    const workFilters = Array.from(document.querySelectorAll('.filter'));
+    workFilters.forEach(btn => btn.addEventListener('click', () => {
+        const f = btn.dataset.filter;
+        workFilters.forEach(b => {
+            b.classList.toggle('active', b === btn);
+            b.setAttribute('aria-pressed', String(b === btn));
+        });
+        document.querySelectorAll('#works-grid .work').forEach(card => {
+            card.hidden = !(f === 'all' || card.dataset.kind === f || card.dataset.kind === 'cta');
+        });
+    }));
+
+    document.querySelectorAll('[data-set]').forEach(el => {
+        el.addEventListener('click', () => lbOpen(el.dataset.set, Number(el.dataset.index) || 0));
+    });
+    lbClose.addEventListener('click', lbCloseFn);
+    lightbox.querySelectorAll('#lbPrev, [data-lb="prev"]').forEach(b => b.addEventListener('click', () => lbShow(lbIndex - 1)));
+    lightbox.querySelectorAll('#lbNext, [data-lb="next"]').forEach(b => b.addEventListener('click', () => lbShow(lbIndex + 1)));
+    lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox || e.target.tagName === 'FIGURE') lbCloseFn();
+    });
+    window.addEventListener('keydown', (e) => {
+        if (lightbox.hidden) return;
+        if (e.key === 'Escape') lbCloseFn();
+        if (e.key === 'ArrowLeft') lbShow(lbIndex - 1);
+        if (e.key === 'ArrowRight') lbShow(lbIndex + 1);
+    });
+
+    // Отправка заявки через собственную функцию в Yandex Cloud (работает без VPN).
+    // Файлы загружаются в Object Storage по временным ссылкам, функция прикладывает их к письму.
+    // После деплоя функции (см. DEPLOY.md) вставьте сюда её публичный URL.
+    const LEAD_ENDPOINT = 'https://functions.yandexcloud.net/d4ehb99eogd2b8r79s6m';
+
+    const leadForm = document.getElementById('leadForm');
+    const leadStatus = document.getElementById('leadStatus');
+    const leadPage = document.getElementById('leadPage');
+    const leadTime = document.getElementById('leadTime');
+    const leadAltSend = document.getElementById('leadAltSend');
+    const leadTelegramLink = document.getElementById('leadTelegramLink');
+    const leadCopyTextBtn = document.getElementById('leadCopyTextBtn');
+    const leadFileDrop = document.getElementById('leadFileDrop');
+    const leadFileInput = document.getElementById('leadFileInput');
+    const leadFileStatus = document.getElementById('leadFileStatus');
+    const leadFileClearBtn = document.getElementById('leadFileClearBtn');
+    const leadFileList = document.getElementById('leadFileList');
+    const MAX_BYTES = 10 * 1024 * 1024; // должен совпадать с MAX_TOTAL_BYTES в index.py
+    const MAX_FILES = 10;               // должен совпадать с MAX_FILES в index.py
+    const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'heif', 'bmp', 'tif', 'tiff',
+        'pdf', 'zip', 'rar', '7z', 'step', 'stp', 'stl', 'dwg', 'dxf']; // то же, что ALLOWED_EXTENSIONS в index.py
+
+    function setLeadStatus(text, color = '#16a34a') {
+        if (!leadStatus) return;
+        leadStatus.textContent = text;
+        leadStatus.style.color = color;
+    }
+
+    function buildLeadText() {
+        const name = (leadForm?.elements?.namedItem('name')?.value || '').trim();
+        const contact = (leadForm?.elements?.namedItem('contact')?.value || '').trim();
+        const comment = (leadForm?.elements?.namedItem('comment')?.value || '').trim();
+        const fileNames = selectedFiles.map(f => f?.name).filter(Boolean).join(', ') || '-';
+        return [
+            'Заявка с лендинга Реверспром',
+            '',
+            `Имя: ${name || '-'}`,
+            `Контакт: ${contact || '-'}`,
+            `Комментарий: ${comment || '-'}`,
+            `Файлы: ${fileNames}`,
+            '',
+            `Страница: ${location.href}`,
+            `Время: ${new Date().toLocaleString('ru-RU')}`
+        ].join('\n');
+    }
+
+    function showAltSend() {
+        if (leadAltSend) leadAltSend.style.display = 'flex';
+        const text = buildLeadText();
+        if (leadTelegramLink) {
+            const tg = new URL('https://t.me/reversprom_eng');
+            tg.searchParams.set('text', text);
+            leadTelegramLink.href = tg.toString();
+        }
+        if (leadCopyTextBtn) {
+            leadCopyTextBtn.onclick = async () => {
+                try {
+                    await navigator.clipboard.writeText(text);
+                    setLeadStatus('Текст заявки скопирован. Вставьте его в Telegram/почту и отправьте.', '#16a34a');
+                } catch (e) {
+                    setLeadStatus('Не удалось скопировать автоматически. Скопируйте текст вручную.', '#b91c1c');
+                }
+            };
+        }
+    }
+
+    function setLeadFileStatus(text, color = '#16a34a') {
+        if (!leadFileStatus) return;
+        leadFileStatus.textContent = text;
+        leadFileStatus.style.color = color;
+    }
+
+    function setLeadFileSelected(isSelected) {
+        if (!leadFileClearBtn) return;
+        leadFileClearBtn.style.display = isSelected ? 'inline-flex' : 'none';
+    }
+
+    const selectedFiles = [];
+
+    function formatBytes(bytes) {
+        if (!Number.isFinite(bytes)) return '';
+        const mb = bytes / (1024 * 1024);
+        if (mb >= 1) return `${mb.toFixed(mb >= 10 ? 0 : 1)} МБ`;
+        const kb = bytes / 1024;
+        return `${Math.max(1, Math.round(kb))} КБ`;
+    }
+
+    function totalSelectedBytes() {
+        return selectedFiles.reduce((sum, f) => sum + (f?.size || 0), 0);
+    }
+
+    function validateLeadFiles(files) {
+        if (files.length > MAX_FILES) return { ok: false, message: `Можно прикрепить не более ${MAX_FILES} файлов.` };
+        const bad = files.find(f => !ALLOWED_EXTENSIONS.includes(String(f?.name || '').split('.').pop().toLowerCase()));
+        if (bad) return { ok: false, message: `Недопустимый тип файла: ${bad.name}. Разрешены фото, PDF, STEP/STL, DWG/DXF и архивы.` };
+        const total = files.reduce((sum, f) => sum + (f?.size || 0), 0);
+        if (total > MAX_BYTES) return { ok: false, message: `Слишком большой общий размер файлов (${formatBytes(total)}). Максимум 10 МБ.` };
+        return { ok: true };
+    }
+
+    function renderSelectedFiles() {
+        if (!leadFileList) return;
+        if (selectedFiles.length === 0) {
+            leadFileList.innerHTML = '';
+            return;
+        }
+
+        const items = selectedFiles.map((f, idx) => {
+            const safeName = (f?.name || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return `
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; padding:0.35rem 0; border-top: 1px solid #e2e8f0;">
+                    <div style="font-size:0.85rem; color:#0f172a; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                        ${safeName} <span style="color:#64748b;">(${formatBytes(f.size)})</span>
+                    </div>
+                    <button type="button" class="btn btn-outline lead-file-remove" data-idx="${idx}" style="padding:0.35rem 0.8rem;">Убрать</button>
+                </div>
+            `;
+        }).join('');
+
+        leadFileList.innerHTML = `
+            <div style="border:1px solid #e2e8f0; border-radius:1rem; padding:0.5rem 0.9rem; background:#fff;">
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; padding:0.15rem 0 0.5rem 0;">
+                    <div style="font-weight:700; font-size:0.85rem; color:#0f172a;">Прикрепленные файлы</div>
+                    <div style="font-size:0.8rem; color:#64748b;">Итого: ${formatBytes(totalSelectedBytes())}</div>
+                </div>
+                ${items}
+            </div>
+        `;
+
+        leadFileList.querySelectorAll('.lead-file-remove').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const i = Number(btn.getAttribute('data-idx'));
+                if (!Number.isFinite(i)) return;
+                selectedFiles.splice(i, 1);
+                setLeadFileStatus(selectedFiles.length ? `✅ Файлов прикреплено: ${selectedFiles.length}` : '', '#16a34a');
+                setLeadFileSelected(selectedFiles.length > 0);
+                renderSelectedFiles();
+            });
+        });
+    }
+
+    function setSelectedFiles(files) {
+        selectedFiles.splice(0, selectedFiles.length, ...files);
+        setLeadFileSelected(selectedFiles.length > 0);
+        setLeadFileStatus(selectedFiles.length ? `✅ Файлов прикреплено: ${selectedFiles.length}` : '', '#16a34a');
+        renderSelectedFiles();
+    }
+
+    function fileKey(f) {
+        return `${f?.name || ''}::${f?.size || 0}::${f?.lastModified || 0}`;
+    }
+
+    function mergeSelectedFiles(newFiles) {
+        const merged = [...selectedFiles];
+        const seen = new Set(merged.map(fileKey));
+        newFiles.forEach(f => {
+            const k = fileKey(f);
+            if (!seen.has(k)) {
+                merged.push(f);
+                seen.add(k);
+            }
+        });
+        return merged;
+    }
+
+    function handleLeadFiles(files) {
+        const v = validateLeadFiles(files);
+        if (!v.ok) {
+            setLeadFileStatus(v.message, '#b91c1c');
+            if (leadFileInput) leadFileInput.value = '';
+            setLeadFileSelected(false);
+            if (selectedFiles.length) setSelectedFiles([]);
+            return;
+        }
+        setSelectedFiles(files);
+    }
+
+    function addLeadFiles(filesToAdd) {
+        if (!filesToAdd.length) return;
+        const merged = mergeSelectedFiles(filesToAdd);
+        const v = validateLeadFiles(merged);
+        if (!v.ok) {
+            setLeadFileStatus(v.message, '#b91c1c');
+            return;
+        }
+        setSelectedFiles(merged);
+    }
+
+    if (leadForm) {
+        if (leadPage) leadPage.value = location.href;
+        if (leadTime) leadTime.value = new Date().toLocaleString('ru-RU');
+
+        const clearLeadStatusOnEdit = () => setLeadStatus('', '#16a34a');
+        // Clear success/error message when user starts a new submission
+        ['input', 'change'].forEach(evt => leadForm.addEventListener(evt, clearLeadStatusOnEdit, { capture: true }));
+
+        if (leadFileDrop && leadFileInput) {
+            ['dragenter', 'dragover'].forEach(evt =>
+                leadFileDrop.addEventListener(evt, (e) => {
+                    e.preventDefault();
+                    leadFileDrop.classList.add('is-dragover');
+                })
+            );
+            ['dragleave', 'drop'].forEach(evt =>
+                leadFileDrop.addEventListener(evt, (e) => {
+                    e.preventDefault();
+                    leadFileDrop.classList.remove('is-dragover');
+                })
+            );
+
+            leadFileDrop.addEventListener('drop', (e) => {
+                const files = Array.from(e.dataTransfer?.files || []);
+                if (!files.length) return;
+                // Don't try to mutate input.files (can be flaky). Keep our own list.
+                leadFileInput.value = '';
+                addLeadFiles(files);
+            });
+            leadFileDrop.addEventListener('click', (e) => {
+                // Avoid double-trigger when clicking on the inner label/input
+                if (e.target && e.target.closest && e.target.closest('label')) return;
+                leadFileInput.click();
+            });
+            leadFileDrop.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    leadFileInput.click();
+                }
+            });
+            leadFileInput.addEventListener('change', (e) => {
+                const files = Array.from(e.target?.files || []);
+                if (files.length) {
+                    // Browsers replace the file input selection; we treat it as "add" to our list.
+                    addLeadFiles(files);
+                    // Reset input so picking the same file again still fires change
+                    leadFileInput.value = '';
+                } else {
+                    handleLeadFiles([]);
+                }
+            });
+        }
+
+        if (leadFileClearBtn && leadFileInput) {
+            leadFileClearBtn.addEventListener('click', () => {
+                leadFileInput.value = '';
+                handleLeadFiles([]);
+            });
+        }
+
+        async function callLeadEndpoint(body) {
+            const res = await fetch(LEAD_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            const data = await res.json().catch(() => null);
+            if (!res.ok || !data?.ok) throw new Error(data?.error || `HTTP ${res.status}`);
+            return data;
+        }
+
+        // Загружает файл по временной ссылке в Object Storage; onProgress получает число загруженных байт.
+        // XMLHttpRequest вместо fetch — только ради индикатора прогресса.
+        function uploadFile(url, file, onProgress) {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.open('PUT', url);
+                if (file.type) xhr.setRequestHeader('Content-Type', file.type);
+                xhr.upload.onprogress = (e) => { if (e.lengthComputable) onProgress(e.loaded); };
+                xhr.onload = () => (xhr.status >= 200 && xhr.status < 300)
+                    ? resolve()
+                    : reject(new Error(`не удалось загрузить файл ${file.name} (HTTP ${xhr.status})`));
+                xhr.onerror = () => reject(new Error(`не удалось загрузить файл ${file.name} (нет соединения с хранилищем)`));
+                xhr.send(file);
+            });
+        }
+
+        leadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const submitBtn = leadForm.querySelector('button[type="submit"]');
+            if (leadTime) leadTime.value = new Date().toLocaleString('ru-RU');
+            const v = validateLeadFiles(selectedFiles);
+            if (!v.ok) {
+                setLeadFileStatus(v.message, '#b91c1c');
+                return;
+            }
+
+            const name = (leadForm.elements.namedItem('name')?.value || '').trim();
+            const contact = (leadForm.elements.namedItem('contact')?.value || '').trim();
+            const comment = (leadForm.elements.namedItem('comment')?.value || '').trim();
+
+            try {
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.style.opacity = '0.85';
+                }
+                setLeadStatus('Отправляем заявку…', '#0369a1');
+
+                if (!LEAD_ENDPOINT || LEAD_ENDPOINT.includes('REPLACE-ME')) {
+                    throw new Error('Адрес обработчика заявок не настроен (LEAD_ENDPOINT)');
+                }
+
+                const files = [];
+                let uploadId = '';
+                if (selectedFiles.length) {
+                    const init = await callLeadEndpoint({
+                        action: 'init',
+                        files: selectedFiles.map(f => ({ name: f.name, size: f.size, type: f.type }))
+                    });
+                    uploadId = init.uploadId;
+                    const totalBytes = totalSelectedBytes() || 1;
+                    const loaded = selectedFiles.map(() => 0);
+                    const showProgress = () => {
+                        const pct = Math.min(100, Math.round(loaded.reduce((a, b) => a + b, 0) / totalBytes * 100));
+                        setLeadStatus(`Загружаем файлы… ${pct}%`, '#0369a1');
+                    };
+                    showProgress();
+                    await Promise.all(selectedFiles.map((f, i) =>
+                        uploadFile(init.uploads[i].url, f, (bytes) => { loaded[i] = bytes; showProgress(); })
+                    ));
+                    selectedFiles.forEach((f, i) => files.push({ key: init.uploads[i].key, filename: f.name }));
+                    setLeadStatus('Отправляем заявку…', '#0369a1');
+                }
+
+                await callLeadEndpoint({
+                    action: 'submit',
+                    name,
+                    contact,
+                    comment,
+                    website: (leadForm.elements.namedItem('website')?.value || ''),
+                    page: leadPage ? leadPage.value : location.href,
+                    time: leadTime ? leadTime.value : new Date().toLocaleString('ru-RU'),
+                    uploadId,
+                    files
+                });
+
+                setLeadStatus('Заявка принята. Спасибо! Мы свяжемся с вами в ближайшее время.', '#16a34a');
+                leadForm.reset();
+                if (leadPage) leadPage.value = location.href;
+                setLeadFileStatus('');
+                setLeadFileSelected(false);
+                setSelectedFiles([]);
+            } catch (err) {
+                setLeadStatus(`Не удалось отправить заявку: ${err?.message || err}. Вы можете отправить данные через Telegram ниже.`, '#b91c1c');
+                showAltSend();
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.style.opacity = '';
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Реверспром | Реверс-инжиниринг деталей по образцу</title>
+    <meta name="description" content="Реверспром: 3D-сканирование, чертежи, техкарты и производство деталей по образцу. Партии 1–1000+ шт, срок от 5 дней.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Set your production photo here (local file or URL). Example: url('assets/production.jpg') */
+            --hero-photo: none;
+            --hero-photo-opacity: 0.28;
+            --blueprint-opacity: 0.18;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #1e293b;
+            line-height: 1.5;
+            scroll-behavior: smooth;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            body { scroll-behavior: auto; }
+            * { transition: none !important; }
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Typography */
+        h1, h2, h3 {
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        h1 {
+            font-size: 3rem;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .section {
+            padding: 5rem 0;
+        }
+
+        .section-gray {
+            background-color: #f8fafc;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            font-weight: 600;
+            padding: 0.8rem 1.8rem;
+            border-radius: 40px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary:hover {
+            background-color: #1d4ed8;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid #2563eb;
+            color: #2563eb;
+        }
+
+        .btn-outline:hover {
+            background: #eff6ff;
+        }
+
+        /* Header / Nav */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 0;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            background:
+                /* metallic base + cold-blue tint */
+                linear-gradient(
+                    110deg,
+                    #0b1220 0%,
+                    #1e3a8a 14%,
+                    #93c5fd 26%,
+                    #38bdf8 34%,
+                    #1d4ed8 42%,
+                    #e0f2fe 52%,
+                    #2563eb 62%,
+                    #60a5fa 74%,
+                    #0b1220 100%
+                );
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            background-size: 240% 100%;
+            background-position: 0% 50%;
+            filter: drop-shadow(0 1px 0 rgba(255,255,255,0.35)) drop-shadow(0 10px 24px rgba(15,23,42,0.10));
+            animation: logo-shimmer 6.4s ease-in-out infinite;
+        }
+
+        .shimmer-text {
+            background:
+                linear-gradient(
+                    110deg,
+                    #0b1220 0%,
+                    #1e3a8a 14%,
+                    #93c5fd 26%,
+                    #38bdf8 34%,
+                    #1d4ed8 42%,
+                    #e0f2fe 52%,
+                    #2563eb 62%,
+                    #60a5fa 74%,
+                    #0b1220 100%
+                );
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            background-size: 240% 100%;
+            background-position: 0% 50%;
+            filter: drop-shadow(0 1px 0 rgba(255,255,255,0.25)) drop-shadow(0 10px 24px rgba(15,23,42,0.08));
+            animation: logo-shimmer 6.4s ease-in-out infinite;
+        }
+
+        @keyframes logo-shimmer {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .logo { animation: none; }
+            .shimmer-text { animation: none; }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #334155;
+            font-weight: 500;
+        }
+
+        /* Hero */
+        .hero-section {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(900px 500px at 70% 20%, rgba(37, 99, 235, 0.18), transparent 60%),
+                radial-gradient(700px 420px at 15% 10%, rgba(2, 132, 199, 0.14), transparent 55%),
+                linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.98));
+        }
+
+        .hero-section::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background:
+                /* Photo layer (optional). Put your image into --hero-photo and tune --hero-photo-opacity. */
+                linear-gradient(
+                    rgba(255,255,255, calc(1 - var(--hero-photo-opacity))),
+                    rgba(255,255,255, calc(1 - var(--hero-photo-opacity)))
+                ),
+                var(--hero-photo),
+                /* Blueprint grid (strength controlled by --blueprint-opacity) */
+                repeating-linear-gradient(90deg, rgba(37, 99, 235, var(--blueprint-opacity)) 0 1px, transparent 1px 80px),
+                repeating-linear-gradient(0deg, rgba(37, 99, 235, var(--blueprint-opacity)) 0 1px, transparent 1px 80px);
+            background-size: auto, cover, 80px 80px, 80px 80px;
+            background-position: 0 0, center, center, center;
+            background-repeat: no-repeat, no-repeat, repeat, repeat;
+            mix-blend-mode: multiply;
+        }
+
+        .hero-section .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .hero-content {
+            flex: 1;
+        }
+
+        .hero-badge {
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 0.3rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .hero-stats div span {
+            font-weight: 800;
+            font-size: 1.5rem;
+            display: block;
+        }
+
+        /* Upload area */
+        .upload-card {
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.1);
+            padding: 2rem;
+            flex: 0.8;
+            border: 1px solid #e2e8f0;
+            backdrop-filter: blur(6px);
+        }
+
+        .file-drop {
+            border: 2px dashed #cbd5e1;
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            margin: 1rem 0;
+            transition: 0.2s;
+        }
+
+        .file-drop.is-dragover {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .file-drop i {
+            font-size: 2.5rem;
+            color: #2563eb;
+            margin-bottom: 1rem;
+        }
+
+        /* Grid for steps & services */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 1.8rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+            border: 1px solid #eef2ff;
+            transition: all 0.2s;
+        }
+
+        .card:hover {
+            border-color: #b9d0f8;
+        }
+
+        .card i {
+            font-size: 2rem;
+            color: #2563eb;
+            margin-bottom: 1rem;
+        }
+
+        /* portfolio gallery */
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+        }
+
+        .gallery-item {
+            background: #f1f5f9;
+            border-radius: 1.2rem;
+            overflow: hidden;
+            max-width: 320px;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 0;
+            text-align: left;
+        }
+
+        .gallery-item:focus-visible {
+            outline: 3px solid #2563eb;
+            outline-offset: 3px;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .gallery-caption {
+            padding: 1rem;
+            background: white;
+        }
+
+        /* Tabs */
+        .tab-container {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            background: #eef2ff;
+            border: none;
+            padding: 0.6rem 1.8rem;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .tab-btn.active {
+            background: #2563eb;
+            color: white;
+        }
+        .tab-content[hidden] { display: none !important; }
+
+        .price-card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        }
+
+        /* FAQ */
+        details {
+            background: #f8fafc;
+            margin-bottom: 1rem;
+            padding: 1rem 1.5rem;
+            border-radius: 1rem;
+            cursor: pointer;
+        }
+        summary {
+            font-weight: 700;
+            outline: none;
+        }
+
+        /* Form */
+        .contact-form {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.05);
+        }
+        input, textarea {
+            width: 100%;
+            padding: 0.8rem;
+            margin-top: 0.3rem;
+            margin-bottom: 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 1rem;
+            font-family: inherit;
+        }
+
+        footer {
+            background: #0f172a;
+            color: #cbd5e6;
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        /* Modal */
+        .modal-backdrop[hidden] { display: none !important; }
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-dialog {
+            background: white;
+            border-radius: 20px;
+            max-width: 90%;
+            max-height: 90%;
+            padding: 1rem;
+        }
+
+        @media (max-width: 800px) {
+            h1 { font-size: 2rem; }
+            .hero { flex-direction: column; }
+            .container { padding: 0 20px; }
+            .section { padding: 3rem 0; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="container">
+    <nav>
+        <div class="logo">РЕВЕРСПРОМ</div>
+        <div class="nav-links">
+            <a href="#services">Услуги</a>
+            <a href="#works">Примеры</a>
+            <a href="#faq">FAQ</a>
+            <a href="#contact" class="btn btn-primary" style="padding: 0.5rem 1.2rem;">Связаться</a>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <noscript>
+        <div class="container" style="padding: 1rem 24px; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 1rem; margin: 1rem auto;">
+            Для корректной работы калькулятора/формы включите JavaScript.
+        </div>
+    </noscript>
+
+    <!-- Hero section -->
+    <section class="section hero-section">
+        <div class="container hero">
+            <div class="hero-content">
+                <div class="hero-badge">Реверс-инжиниринг B2B</div>
+                <h1>Деталь без чертежа?<br>Сделаем заново. <span class="shimmer-text">От образца до металла</span></h1>
+                <p style="font-size: 1.2rem; margin: 1rem 0;">3D-сканирование, чертежи, техкарты и производство партий 1–1000+ шт. Срок от 5 дней.</p>
+                <div class="hero-stats">
+                    <div><span>±0.05 мм</span>Точность</div>
+                    <div><span>от 1 шт</span>Минимальный заказ</div>
+                    <div><span>24/7</span>Инженер на связи</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Проблема / решение -->
+    <section class="section section-gray">
+        <div class="container">
+            <div style="display: flex; flex-wrap: wrap; gap: 2rem; justify-content: center;">
+                <div style="flex:1; background:#fff; border-radius: 2rem; padding: 2rem; border-left: 5px solid #ef4444;">
+                    <i class="fas fa-exclamation-triangle" style="font-size:2rem; color:#ef4444;" aria-hidden="true"></i>
+                    <h3 style="margin: 1rem 0;">Проблема</h3>
+                    <p>Станок встал. Импортная деталь снята с производства. Чертежи утеряны, а новый оригинал стоит как крыло самолета и 6 месяцев поставки.</p>
+                </div>
+                <div style="flex:1; background:#fff; border-radius: 2rem; padding: 2rem; border-left: 5px solid #10b981;">
+                    <i class="fas fa-check-circle" style="font-size:2rem; color:#10b981;" aria-hidden="true"></i>
+                    <h3 style="margin: 1rem 0;">Решение Реверспром</h3>
+                    <p>Сканируем образец → создаём точную 3D-модель и чертежи → техкарта → изготовим или подберём производство. Готово через 5-15 дней.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Шаги -->
+    <section class="section">
+        <div class="container">
+            <h2>⚙️ Как мы работаем</h2>
+            <div class="grid-3">
+                <div class="card"><i class="fas fa-cube" aria-hidden="true"></i><h3>1. Образец</h3><p>Вы отправляете деталь или привозите на сканирование.</p></div>
+                <div class="card"><i class="fas fa-scan" aria-hidden="true"></i><h3>2. 3D-сканирование</h3><p>Точность до 0.05 мм, любые сложные поверхности.</p></div>
+                <div class="card"><i class="fas fa-drafting-compass" aria-hidden="true"></i><h3>3. Чертежи + техкарта</h3><p>Комплект .dwg, .step, маршрут обработки.</p></div>
+                <div class="card"><i class="fas fa-microchip" aria-hidden="true"></i><h3>4. Производство</h3><p>Сами на ЧПУ или подбираем площадку под бюджет.</p></div>
+                <div class="card"><i class="fas fa-truck" aria-hidden="true"></i><h3>5. Доставка</h3><p>От 1 штуки до серии. По всей РФ.</p></div>
+                <div class="card"><i class="fas fa-chart-line" aria-hidden="true"></i><h3>6. Гарантия 12 мес.</h3><p>На все изготовленные детали.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Услуги табы -->
+    <section id="services" class="section section-gray">
+        <div class="container">
+            <h2>🔧 Услуги</h2>
+            <div class="tab-container" role="tablist" aria-label="Услуги">
+                <button class="tab-btn active" data-tab="tab1" role="tab" aria-selected="true" aria-controls="tab1" id="tabBtn1">Инжиниринг</button>
+                <button class="tab-btn" data-tab="tab2" role="tab" aria-selected="false" aria-controls="tab2" id="tabBtn2">Под ключ</button>
+                <button class="tab-btn" data-tab="tab3" role="tab" aria-selected="false" aria-controls="tab3" id="tabBtn3">Оптимизация</button>
+            </div>
+            <div id="tab1" class="tab-content" role="tabpanel" aria-labelledby="tabBtn1">
+                <div class="price-card"><h3>Только документация</h3><p>Чертежи + техкарта + 3D-модель</p><p style="font-size:1.8rem; font-weight:800;"><a href="#contact" style="color:#2563eb; text-decoration:none;">по запросу</a></p><p>Для тех, у кого есть свое производство, но нет конструктора.</p></div>
+            </div>
+            <div id="tab2" class="tab-content" role="tabpanel" aria-labelledby="tabBtn2" hidden>
+                <div class="price-card"><h3>Документация + Готовая деталь</h3><p>Изготовим от 1 до 100 шт.</p><p style="font-size:1.8rem; font-weight:800;"><a href="#contact" style="color:#2563eb; text-decoration:none;">по запросу</a></p><p>*зависит от сложности и материала. Срочный ремонт станков.</p></div>
+            </div>
+            <div id="tab3" class="tab-content" role="tabpanel" aria-labelledby="tabBtn3" hidden>
+                <div class="price-card"><h3>Усиление образца</h3><p>Сделаем деталь прочнее оригинала, изменим материал, добавим ребра жесткости.</p><p style="font-size:1.8rem; font-weight:800;"><a href="#contact" style="color:#2563eb; text-decoration:none;">по запросу</a></p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Портфолио (примеры работ) -->
+    <section id="works" class="section">
+        <div class="container">
+            <h2>📌 Примеры работ «Было / Стало»</h2>
+            <div class="gallery" id="gallery" aria-label="Галерея примеров работ">
+                <button class="gallery-item" type="button" data-before="Pictures/Drum%20Grid/Drum%20Grid%20SW.png" data-after="Pictures/Drum%20Grid/Drum%20Grid%20Front%20right.png" aria-label="Открыть пример: Барабанная решётка">
+                    <img src="Pictures/Drum%20Grid/Drum%20Grid%20SW.png" alt="Барабанная решётка (было)">
+                    <div class="gallery-caption"><strong>Барабанная решётка</strong><br>Было / Стало</div>
+                </button>
+                <button class="gallery-item" type="button" data-before="Pictures/Pneumatic%20Distributor/Pneumo%20distributor%20SW.png" data-after="Pictures/Pneumatic%20Distributor/Pneumo%20Distributor%20front%20left.png" aria-label="Открыть пример: Пневматический распределитель">
+                    <img src="Pictures/Pneumatic%20Distributor/Pneumo%20distributor%20SW.png" alt="Пневматический распределитель (было)">
+                    <div class="gallery-caption"><strong>Пневматический распределитель</strong><br>Было / Стало</div>
+                </button>
+                <button class="gallery-item" type="button" data-before="Pictures/Turbine/Turbine%20SW.png" data-after="Pictures/Turbine/Turbine%20side.png" aria-label="Открыть пример: Турбина">
+                    <img src="Pictures/Turbine/Turbine%20SW.png" alt="Турбина (было)">
+                    <div class="gallery-caption"><strong>Турбина</strong><br>Было / Стало</div>
+                </button>
+            </div>
+
+            <div id="modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-label="Просмотр примера до и после" hidden>
+                <div class="modal-dialog" role="document">
+                    <div style="display:flex; gap:1rem; flex-wrap:wrap; justify-content:center;">
+                        <img id="modalBefore" style="max-width:300px; border-radius:12px;" alt="Было">
+                        <img id="modalAfter" style="max-width:300px; border-radius:12px;" alt="Стало">
+                    </div>
+                    <p style="text-align:center; margin-top:1rem;">Было → Стало</p>
+                    <button type="button" class="btn btn-outline" id="modalCloseBtn" style="display:block; margin:1rem auto;">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Технические возможности -->
+    <section class="section section-gray">
+        <div class="container">
+            <h2>🛠️ Технические возможности</h2>
+            <div class="grid-3">
+                <div class="card"><i class="fas fa-3d" aria-hidden="true"></i><h3>Оборудование</h3><p>3D-сканер Artec / RangeVision, КИМ, оптические приборы.</p></div>
+                <div class="card"><i class="fas fa-file-alt" aria-hidden="true"></i><h3>Форматы выдачи</h3><p>.dwg, .dxf, .stp, .pdf, .cdw, .stl</p></div>
+                <div class="card"><i class="fas fa-industry" aria-hidden="true"></i><h3>Материалы</h3><p>Сталь 45, 40Х, чугун, алюминий, бронза, пластик (POM, PA6).</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="section">
+        <div class="container">
+            <h2>❓ Часто задаваемые вопросы</h2>
+            <details><summary>Законно ли копировать детали?</summary><p>Да, если вы владелец оборудования и восстанавливаете его работоспособность. Мы не копируем запатентованные дизайны для перепродажи под видом оригинальных.</p></details>
+            <details><summary>Какая минимальная партия?</summary><p>От 1 штуки. Единичное изготовление — наша специализация.</p></details>
+            <details><summary>Что делать, если деталь сложная (криволинейные формы)?</summary><p>3D-сканер и опыт инженеров позволяют восстановить любую геометрию.</p></details>
+            <details><summary>Сколько времени занимает полный цикл?</summary><p>От 5 до 15 дней в зависимости от загрузки и сложности.</p></details>
+        </div>
+    </section>
+
+    <!-- Контакт / заявка -->
+    <section id="contact" class="section section-gray">
+        <div class="container">
+            <h2>📩 Оставьте заявку</h2>
+            <div class="contact-form">
+                <form id="leadForm" action="#" method="POST">
+                    <label for="leadName">Ваше имя</label>
+                    <input id="leadName" name="name" type="text" placeholder="Алексей" autocomplete="name" required>
+                    <label for="leadContact">Телефон / Telegram</label>
+                    <input id="leadContact" name="contact" type="text" placeholder="+7 999 123-45-67 или @username" autocomplete="tel" required>
+                    <label for="leadComment">Комментарий: что за деталь, количество</label>
+                    <textarea id="leadComment" name="comment" rows="3" placeholder="Шестерня Z=45, нужно 2 шт, есть образец"></textarea>
+                    <label>Файлы (фото/чертёж)</label>
+                    <div class="file-drop" id="leadFileDrop" role="button" tabindex="0" aria-label="Зона загрузки файла. Нажмите, чтобы выбрать файл или перетащите файл сюда.">
+                        <i class="fas fa-cloud-upload-alt" aria-hidden="true"></i>
+                        <p>Перетащите файлы или <label style="color:#2563eb; cursor: pointer;">выберите файлы<input type="file" id="leadFileInput" name="attachment" hidden multiple accept=".jpg,.jpeg,.png,.gif,.webp,.heic,.heif,.bmp,.tif,.tiff,.pdf,.zip,.rar,.7z,.step,.stp,.stl,.dwg,.dxf"></label></p>
+                        <p style="font-size: 0.7rem; margin-top: 0.5rem;">Фото, PDF, чертежи, 3D-модели, архивы — до 10 файлов, всего до 10 МБ</p>
+                    </div>
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; margin-top: 0.5rem;">
+                        <div id="leadFileStatus" style="font-size: 0.8rem;" aria-live="polite"></div>
+                        <button id="leadFileClearBtn" type="button" class="btn btn-outline" style="padding: 0.45rem 1rem; display:none;">Удалить все</button>
+                    </div>
+                    <div id="leadFileList" style="margin-top:0.5rem;"></div>
+                    <input type="hidden" name="page" id="leadPage">
+                    <input type="hidden" name="time" id="leadTime">
+                    <!-- Ловушка для ботов: поле скрыто от людей, заполненные им заявки сервер не отправляет -->
+                    <div aria-hidden="true" style="position:absolute; left:-10000px; width:1px; height:1px; overflow:hidden;">
+                        <label for="leadWebsite">Сайт</label>
+                        <input id="leadWebsite" name="website" type="text" tabindex="-1" autocomplete="off">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%;">Отправить заявку → инженер свяжется за 20 минут</button>
+                    <div id="leadStatus" style="font-size: 0.9rem; margin-top: 0.75rem;" aria-live="polite"></div>
+                    <div id="leadAltSend" style="display:none; margin-top:0.75rem; gap:0.6rem; flex-wrap:wrap;">
+                        <a id="leadTelegramLink" class="btn btn-outline" target="_blank" rel="noopener">Отправить в Telegram</a>
+                        <button id="leadCopyTextBtn" type="button" class="btn btn-outline">Скопировать текст заявки</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <div class="container">
+        <p>© 2026 РЕВЕРСПРОМ — Реверс-инжиниринг и производство деталей по образцу.</p>
+        <p style="margin-top:0.5rem;">📞 +7 (999) 123-45-67 | ✉️ info@reversprom.ru | Telegram: @reversprom_eng</p>
+    </div>
+</footer>
+
+<script>
+    // Tabs (accessible + robust)
+    const btns = Array.from(document.querySelectorAll('.tab-btn'));
+    const panels = btns.map(b => document.getElementById(b.getAttribute('data-tab'))).filter(Boolean);
+    function activateTab(btn) {
+        btns.forEach(b => {
+            const isActive = b === btn;
+            b.classList.toggle('active', isActive);
+            b.setAttribute('aria-selected', String(isActive));
+        });
+        panels.forEach(p => p.hidden = true);
+        const tabId = btn.getAttribute('data-tab');
+        const panel = document.getElementById(tabId);
+        if (panel) panel.hidden = false;
+    }
+    btns.forEach(btn => btn.addEventListener('click', () => activateTab(btn)));
+
+    // Modal for gallery (esc + click outside)
+    const modal = document.getElementById('modal');
+    const modalBefore = document.getElementById('modalBefore');
+    const modalAfter = document.getElementById('modalAfter');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+    let lastActiveEl = null;
+
+    function openModal(beforeImg, afterImg) {
+        lastActiveEl = document.activeElement;
+        modalBefore.src = beforeImg;
+        modalAfter.src = afterImg;
+        modal.hidden = false;
+        modalCloseBtn.focus();
+        document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+        modal.hidden = true;
+        document.body.style.overflow = '';
+        if (lastActiveEl && typeof lastActiveEl.focus === 'function') lastActiveEl.focus();
+    }
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    modalCloseBtn.addEventListener('click', closeModal);
+    window.addEventListener('keydown', (e) => {
+        if (!modal.hidden && e.key === 'Escape') closeModal();
+    });
+
+    document.getElementById('gallery').addEventListener('click', (e) => {
+        const btn = e.target.closest('.gallery-item');
+        if (!btn) return;
+        openModal(btn.dataset.before, btn.dataset.after);
+    });
+
+    // Отправка заявки через собственную функцию в Yandex Cloud (работает без VPN).
+    // Файлы загружаются в Object Storage по временным ссылкам, функция прикладывает их к письму.
+    // После деплоя функции (см. DEPLOY.md) вставьте сюда её публичный URL.
+    const LEAD_ENDPOINT = 'https://functions.yandexcloud.net/d4ehb99eogd2b8r79s6m';
+
+    const leadForm = document.getElementById('leadForm');
+    const leadStatus = document.getElementById('leadStatus');
+    const leadPage = document.getElementById('leadPage');
+    const leadTime = document.getElementById('leadTime');
+    const leadAltSend = document.getElementById('leadAltSend');
+    const leadTelegramLink = document.getElementById('leadTelegramLink');
+    const leadCopyTextBtn = document.getElementById('leadCopyTextBtn');
+    const leadFileDrop = document.getElementById('leadFileDrop');
+    const leadFileInput = document.getElementById('leadFileInput');
+    const leadFileStatus = document.getElementById('leadFileStatus');
+    const leadFileClearBtn = document.getElementById('leadFileClearBtn');
+    const leadFileList = document.getElementById('leadFileList');
+    const MAX_BYTES = 10 * 1024 * 1024; // должен совпадать с MAX_TOTAL_BYTES в index.py
+    const MAX_FILES = 10;               // должен совпадать с MAX_FILES в index.py
+    const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'heif', 'bmp', 'tif', 'tiff',
+        'pdf', 'zip', 'rar', '7z', 'step', 'stp', 'stl', 'dwg', 'dxf']; // то же, что ALLOWED_EXTENSIONS в index.py
+
+    function setLeadStatus(text, color = '#16a34a') {
+        if (!leadStatus) return;
+        leadStatus.textContent = text;
+        leadStatus.style.color = color;
+    }
+
+    function buildLeadText() {
+        const name = (leadForm?.elements?.namedItem('name')?.value || '').trim();
+        const contact = (leadForm?.elements?.namedItem('contact')?.value || '').trim();
+        const comment = (leadForm?.elements?.namedItem('comment')?.value || '').trim();
+        const fileNames = selectedFiles.map(f => f?.name).filter(Boolean).join(', ') || '-';
+        return [
+            'Заявка с лендинга Реверспром',
+            '',
+            `Имя: ${name || '-'}`,
+            `Контакт: ${contact || '-'}`,
+            `Комментарий: ${comment || '-'}`,
+            `Файлы: ${fileNames}`,
+            '',
+            `Страница: ${location.href}`,
+            `Время: ${new Date().toLocaleString('ru-RU')}`
+        ].join('\n');
+    }
+
+    function showAltSend() {
+        if (leadAltSend) leadAltSend.style.display = 'flex';
+        const text = buildLeadText();
+        if (leadTelegramLink) {
+            const tg = new URL('https://t.me/reversprom_eng');
+            tg.searchParams.set('text', text);
+            leadTelegramLink.href = tg.toString();
+        }
+        if (leadCopyTextBtn) {
+            leadCopyTextBtn.onclick = async () => {
+                try {
+                    await navigator.clipboard.writeText(text);
+                    setLeadStatus('Текст заявки скопирован. Вставьте его в Telegram/почту и отправьте.', '#16a34a');
+                } catch (e) {
+                    setLeadStatus('Не удалось скопировать автоматически. Скопируйте текст вручную.', '#b91c1c');
+                }
+            };
+        }
+    }
+
+    function setLeadFileStatus(text, color = '#16a34a') {
+        if (!leadFileStatus) return;
+        leadFileStatus.textContent = text;
+        leadFileStatus.style.color = color;
+    }
+
+    function setLeadFileSelected(isSelected) {
+        if (!leadFileClearBtn) return;
+        leadFileClearBtn.style.display = isSelected ? 'inline-flex' : 'none';
+    }
+
+    const selectedFiles = [];
+
+    function formatBytes(bytes) {
+        if (!Number.isFinite(bytes)) return '';
+        const mb = bytes / (1024 * 1024);
+        if (mb >= 1) return `${mb.toFixed(mb >= 10 ? 0 : 1)} МБ`;
+        const kb = bytes / 1024;
+        return `${Math.max(1, Math.round(kb))} КБ`;
+    }
+
+    function totalSelectedBytes() {
+        return selectedFiles.reduce((sum, f) => sum + (f?.size || 0), 0);
+    }
+
+    function validateLeadFiles(files) {
+        if (files.length > MAX_FILES) return { ok: false, message: `Можно прикрепить не более ${MAX_FILES} файлов.` };
+        const bad = files.find(f => !ALLOWED_EXTENSIONS.includes(String(f?.name || '').split('.').pop().toLowerCase()));
+        if (bad) return { ok: false, message: `Недопустимый тип файла: ${bad.name}. Разрешены фото, PDF, STEP/STL, DWG/DXF и архивы.` };
+        const total = files.reduce((sum, f) => sum + (f?.size || 0), 0);
+        if (total > MAX_BYTES) return { ok: false, message: `Слишком большой общий размер файлов (${formatBytes(total)}). Максимум 10 МБ.` };
+        return { ok: true };
+    }
+
+    function renderSelectedFiles() {
+        if (!leadFileList) return;
+        if (selectedFiles.length === 0) {
+            leadFileList.innerHTML = '';
+            return;
+        }
+
+        const items = selectedFiles.map((f, idx) => {
+            const safeName = (f?.name || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return `
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; padding:0.35rem 0; border-top: 1px solid #e2e8f0;">
+                    <div style="font-size:0.85rem; color:#0f172a; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                        ${safeName} <span style="color:#64748b;">(${formatBytes(f.size)})</span>
+                    </div>
+                    <button type="button" class="btn btn-outline lead-file-remove" data-idx="${idx}" style="padding:0.35rem 0.8rem;">Убрать</button>
+                </div>
+            `;
+        }).join('');
+
+        leadFileList.innerHTML = `
+            <div style="border:1px solid #e2e8f0; border-radius:1rem; padding:0.5rem 0.9rem; background:#fff;">
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; padding:0.15rem 0 0.5rem 0;">
+                    <div style="font-weight:700; font-size:0.85rem; color:#0f172a;">Прикрепленные файлы</div>
+                    <div style="font-size:0.8rem; color:#64748b;">Итого: ${formatBytes(totalSelectedBytes())}</div>
+                </div>
+                ${items}
+            </div>
+        `;
+
+        leadFileList.querySelectorAll('.lead-file-remove').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const i = Number(btn.getAttribute('data-idx'));
+                if (!Number.isFinite(i)) return;
+                selectedFiles.splice(i, 1);
+                setLeadFileStatus(selectedFiles.length ? `✅ Файлов прикреплено: ${selectedFiles.length}` : '', '#16a34a');
+                setLeadFileSelected(selectedFiles.length > 0);
+                renderSelectedFiles();
+            });
+        });
+    }
+
+    function setSelectedFiles(files) {
+        selectedFiles.splice(0, selectedFiles.length, ...files);
+        setLeadFileSelected(selectedFiles.length > 0);
+        setLeadFileStatus(selectedFiles.length ? `✅ Файлов прикреплено: ${selectedFiles.length}` : '', '#16a34a');
+        renderSelectedFiles();
+    }
+
+    function fileKey(f) {
+        return `${f?.name || ''}::${f?.size || 0}::${f?.lastModified || 0}`;
+    }
+
+    function mergeSelectedFiles(newFiles) {
+        const merged = [...selectedFiles];
+        const seen = new Set(merged.map(fileKey));
+        newFiles.forEach(f => {
+            const k = fileKey(f);
+            if (!seen.has(k)) {
+                merged.push(f);
+                seen.add(k);
+            }
+        });
+        return merged;
+    }
+
+    function handleLeadFiles(files) {
+        const v = validateLeadFiles(files);
+        if (!v.ok) {
+            setLeadFileStatus(v.message, '#b91c1c');
+            if (leadFileInput) leadFileInput.value = '';
+            setLeadFileSelected(false);
+            if (selectedFiles.length) setSelectedFiles([]);
+            return;
+        }
+        setSelectedFiles(files);
+    }
+
+    function addLeadFiles(filesToAdd) {
+        if (!filesToAdd.length) return;
+        const merged = mergeSelectedFiles(filesToAdd);
+        const v = validateLeadFiles(merged);
+        if (!v.ok) {
+            setLeadFileStatus(v.message, '#b91c1c');
+            return;
+        }
+        setSelectedFiles(merged);
+    }
+
+    if (leadForm) {
+        if (leadPage) leadPage.value = location.href;
+        if (leadTime) leadTime.value = new Date().toLocaleString('ru-RU');
+
+        const clearLeadStatusOnEdit = () => setLeadStatus('', '#16a34a');
+        // Clear success/error message when user starts a new submission
+        ['input', 'change'].forEach(evt => leadForm.addEventListener(evt, clearLeadStatusOnEdit, { capture: true }));
+
+        if (leadFileDrop && leadFileInput) {
+            ['dragenter', 'dragover'].forEach(evt =>
+                leadFileDrop.addEventListener(evt, (e) => {
+                    e.preventDefault();
+                    leadFileDrop.classList.add('is-dragover');
+                })
+            );
+            ['dragleave', 'drop'].forEach(evt =>
+                leadFileDrop.addEventListener(evt, (e) => {
+                    e.preventDefault();
+                    leadFileDrop.classList.remove('is-dragover');
+                })
+            );
+
+            leadFileDrop.addEventListener('drop', (e) => {
+                const files = Array.from(e.dataTransfer?.files || []);
+                if (!files.length) return;
+                // Don't try to mutate input.files (can be flaky). Keep our own list.
+                leadFileInput.value = '';
+                addLeadFiles(files);
+            });
+            leadFileDrop.addEventListener('click', (e) => {
+                // Avoid double-trigger when clicking on the inner label/input
+                if (e.target && e.target.closest && e.target.closest('label')) return;
+                leadFileInput.click();
+            });
+            leadFileDrop.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    leadFileInput.click();
+                }
+            });
+            leadFileInput.addEventListener('change', (e) => {
+                const files = Array.from(e.target?.files || []);
+                if (files.length) {
+                    // Browsers replace the file input selection; we treat it as "add" to our list.
+                    addLeadFiles(files);
+                    // Reset input so picking the same file again still fires change
+                    leadFileInput.value = '';
+                } else {
+                    handleLeadFiles([]);
+                }
+            });
+        }
+
+        if (leadFileClearBtn && leadFileInput) {
+            leadFileClearBtn.addEventListener('click', () => {
+                leadFileInput.value = '';
+                handleLeadFiles([]);
+            });
+        }
+
+        async function callLeadEndpoint(body) {
+            const res = await fetch(LEAD_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            const data = await res.json().catch(() => null);
+            if (!res.ok || !data?.ok) throw new Error(data?.error || `HTTP ${res.status}`);
+            return data;
+        }
+
+        // Загружает файл по временной ссылке в Object Storage; onProgress получает число загруженных байт.
+        // XMLHttpRequest вместо fetch — только ради индикатора прогресса.
+        function uploadFile(url, file, onProgress) {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.open('PUT', url);
+                if (file.type) xhr.setRequestHeader('Content-Type', file.type);
+                xhr.upload.onprogress = (e) => { if (e.lengthComputable) onProgress(e.loaded); };
+                xhr.onload = () => (xhr.status >= 200 && xhr.status < 300)
+                    ? resolve()
+                    : reject(new Error(`не удалось загрузить файл ${file.name} (HTTP ${xhr.status})`));
+                xhr.onerror = () => reject(new Error(`не удалось загрузить файл ${file.name} (нет соединения с хранилищем)`));
+                xhr.send(file);
+            });
+        }
+
+        leadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const submitBtn = leadForm.querySelector('button[type="submit"]');
+            if (leadTime) leadTime.value = new Date().toLocaleString('ru-RU');
+            const v = validateLeadFiles(selectedFiles);
+            if (!v.ok) {
+                setLeadFileStatus(v.message, '#b91c1c');
+                return;
+            }
+
+            const name = (leadForm.elements.namedItem('name')?.value || '').trim();
+            const contact = (leadForm.elements.namedItem('contact')?.value || '').trim();
+            const comment = (leadForm.elements.namedItem('comment')?.value || '').trim();
+
+            try {
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.style.opacity = '0.85';
+                }
+                setLeadStatus('Отправляем заявку…', '#0369a1');
+
+                if (!LEAD_ENDPOINT || LEAD_ENDPOINT.includes('REPLACE-ME')) {
+                    throw new Error('Адрес обработчика заявок не настроен (LEAD_ENDPOINT)');
+                }
+
+                const files = [];
+                let uploadId = '';
+                if (selectedFiles.length) {
+                    const init = await callLeadEndpoint({
+                        action: 'init',
+                        files: selectedFiles.map(f => ({ name: f.name, size: f.size, type: f.type }))
+                    });
+                    uploadId = init.uploadId;
+                    const totalBytes = totalSelectedBytes() || 1;
+                    const loaded = selectedFiles.map(() => 0);
+                    const showProgress = () => {
+                        const pct = Math.min(100, Math.round(loaded.reduce((a, b) => a + b, 0) / totalBytes * 100));
+                        setLeadStatus(`Загружаем файлы… ${pct}%`, '#0369a1');
+                    };
+                    showProgress();
+                    await Promise.all(selectedFiles.map((f, i) =>
+                        uploadFile(init.uploads[i].url, f, (bytes) => { loaded[i] = bytes; showProgress(); })
+                    ));
+                    selectedFiles.forEach((f, i) => files.push({ key: init.uploads[i].key, filename: f.name }));
+                    setLeadStatus('Отправляем заявку…', '#0369a1');
+                }
+
+                await callLeadEndpoint({
+                    action: 'submit',
+                    name,
+                    contact,
+                    comment,
+                    website: (leadForm.elements.namedItem('website')?.value || ''),
+                    page: leadPage ? leadPage.value : location.href,
+                    time: leadTime ? leadTime.value : new Date().toLocaleString('ru-RU'),
+                    uploadId,
+                    files
+                });
+
+                setLeadStatus('Заявка принята. Спасибо! Мы свяжемся с вами в ближайшее время.', '#16a34a');
+                leadForm.reset();
+                if (leadPage) leadPage.value = location.href;
+                setLeadFileStatus('');
+                setLeadFileSelected(false);
+                setSelectedFiles([]);
+            } catch (err) {
+                setLeadStatus(`Не удалось отправить заявку: ${err?.message || err}. Вы можете отправить данные через Telegram ниже.`, '#b91c1c');
+                showAltSend();
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.style.opacity = '';
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>
