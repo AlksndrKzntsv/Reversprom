@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Реверспром | Политика обработки персональных данных</title>
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --navy: #0b1220;
+            --blue: #2563eb;
+            --blue-soft: #60a5fa;
+            --ink: #0f172a;
+            --text: #334155;
+            --muted: #64748b;
+            --line: #e2e8f0;
+            --mono: 'IBM Plex Mono', ui-monospace, monospace;
+        }
+
+        html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+        body { font-family: 'Inter', sans-serif; background: #f5f7fb; color: var(--text); line-height: 1.65; }
+
+        @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+        /* Шапка */
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: rgba(11, 18, 32, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .site-header .container { display: flex; align-items: center; justify-content: space-between; gap: 1rem; height: 64px; }
+        .logo { font-weight: 800; letter-spacing: 0.06em; color: #fff; text-decoration: none; font-size: 1.3rem; }
+        .logo span { color: var(--blue-soft); }
+
+        .back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.55rem 1.1rem;
+            border-radius: 10px;
+            border: 1.5px solid rgba(255, 255, 255, 0.35);
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .back:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.6); }
+        .back:focus-visible, a:focus-visible { outline: 3px solid var(--blue-soft); outline-offset: 3px; }
+
+        /* Заголовок документа */
+        .doc-head { background: var(--navy); color: #cbd5e1; padding: 3.5rem 0 3rem; }
+
+        .eyebrow {
+            font-family: var(--mono);
+            font-size: 0.8rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--blue-soft);
+            margin-bottom: 0.9rem;
+        }
+
+        .doc-head h1 { color: #fff; font-size: 2.4rem; line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 1rem; }
+        .doc-head p { max-width: 720px; }
+
+        .draft-note {
+            margin-top: 1.5rem;
+            max-width: 720px;
+            padding: 0.9rem 1.1rem;
+            border-radius: 10px;
+            background: rgba(251, 191, 36, 0.12);
+            border: 1px solid rgba(251, 191, 36, 0.4);
+            color: #fde68a;
+            font-size: 0.92rem;
+        }
+
+        /* Документ с оглавлением */
+        .doc { display: grid; grid-template-columns: 260px 1fr; gap: 3rem; padding: 3rem 0 4rem; align-items: start; }
+
+        .toc { position: sticky; top: 90px; }
+        .toc h3 { font-size: 0.8rem; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 0.8rem; }
+        .toc ol { list-style: none; border-left: 1.5px solid var(--line); }
+        .toc a { display: block; padding: 0.35rem 0 0.35rem 1rem; color: var(--text); text-decoration: none; font-size: 0.92rem; line-height: 1.4; }
+        .toc a:hover { color: var(--blue); }
+
+        .paper {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 2.8rem 3rem;
+        }
+
+        .paper section + section { margin-top: 2.6rem; padding-top: 2.6rem; border-top: 1px solid var(--line); }
+        .paper h2 { font-size: 1.4rem; color: var(--ink); line-height: 1.25; margin-bottom: 1.1rem; display: flex; gap: 0.8rem; }
+        .paper h2 .n { font-family: var(--mono); color: var(--blue); font-size: 1rem; padding-top: 0.25rem; }
+        .paper p { margin-bottom: 0.85rem; }
+        .paper ul { margin: 0 0 0.85rem 1.3rem; }
+        .paper li { margin-bottom: 0.4rem; }
+
+        .terms { display: grid; gap: 0.8rem; margin-bottom: 0.85rem; }
+        .terms div { padding: 0.9rem 1.1rem; border-radius: 10px; background: #f8fafc; border-left: 3px solid var(--blue); }
+        .terms b { color: var(--ink); }
+
+        /* Данные, которые нужно заменить реквизитами заказчика */
+        .fill { background: #fef3c7; color: #92400e; padding: 0.05rem 0.35rem; border-radius: 4px; font-weight: 500; }
+
+        .consent-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 1.4rem 1.5rem; }
+
+        .doc-date { margin-top: 2.6rem; font-size: 0.9rem; color: var(--muted); }
+
+        .bottom-back { margin-top: 2rem; }
+        .bottom-back .back { color: var(--blue); border-color: #bfd3fb; }
+        .bottom-back .back:hover { background: #eff6ff; border-color: var(--blue); }
+
+        footer { background: var(--navy); color: #94a3b8; padding: 2rem 0; font-size: 0.9rem; }
+
+        @media (max-width: 900px) {
+            .doc { grid-template-columns: 1fr; gap: 1.5rem; }
+            .toc { position: static; }
+            .paper { padding: 1.8rem 1.4rem; }
+        }
+
+        @media (max-width: 640px) {
+            .container { padding: 0 16px; }
+            .doc-head h1 { font-size: 1.75rem; }
+            .back .txt { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="site-header">
+    <div class="container">
+        <a href="index_v6.html" class="logo">РЕВЕРС<span>ПРОМ</span></a>
+        <a href="index_v6.html#contact" class="back js-back"><span aria-hidden="true">←</span><span class="txt"> Вернуться к заявке</span></a>
+    </div>
+</header>
+
+<div class="doc-head">
+    <div class="container">
+        <div class="eyebrow">Документы</div>
+        <h1>Политика обработки персональных данных</h1>
+        <p>Документ описывает, какие персональные данные собирает сайт, с какой целью, как они хранятся и защищаются, а также права пользователей.</p>
+        <!-- ЧЕРНОВИК: текст типовой, реквизиты выделены жёлтым. Перед публикацией для клиентов текст должен проверить юрист заказчика. -->
+        <p class="draft-note">Черновик документа. Данные, выделенные жёлтым, будут заменены реквизитами компании.</p>
+    </div>
+</div>
+
+<main class="container doc">
+    <nav class="toc" aria-label="Содержание">
+        <h3>Содержание</h3>
+        <ol>
+            <li><a href="#s1">1. Общие положения</a></li>
+            <li><a href="#s2">2. Основные понятия</a></li>
+            <li><a href="#s3">3. Оператор</a></li>
+            <li><a href="#s4">4. Состав данных</a></li>
+            <li><a href="#s5">5. Цели обработки</a></li>
+            <li><a href="#s6">6. Правовые основания</a></li>
+            <li><a href="#s7">7. Порядок и сроки обработки</a></li>
+            <li><a href="#s8">8. Меры защиты</a></li>
+            <li><a href="#s9">9. Права субъекта</a></li>
+            <li><a href="#s10">10. Заключительные положения</a></li>
+            <li><a href="#consent">Согласие на обработку</a></li>
+        </ol>
+    </nav>
+
+    <article class="paper">
+        <section id="s1">
+            <h2><span class="n">01</span>Общие положения</h2>
+            <p>1.1. Настоящая Политика обработки персональных данных (далее — Политика) разработана в соответствии с Федеральным законом от 27.07.2006 № 152-ФЗ «О персональных данных» и определяет порядок обработки персональных данных и меры по обеспечению их безопасности.</p>
+            <p>1.2. Политика применяется ко всей информации, которую Оператор может получить о посетителях сайта <span class="fill">[адрес сайта]</span> (далее — Сайт), в том числе при заполнении формы заявки.</p>
+            <p>1.3. Оператор ставит своей важнейшей целью соблюдение прав и свобод человека и гражданина при обработке его персональных данных, в том числе защиту прав на неприкосновенность частной жизни, личную и семейную тайну.</p>
+            <p>1.4. Политика является общедоступным документом и опубликована на Сайте.</p>
+        </section>
+
+        <section id="s2">
+            <h2><span class="n">02</span>Основные понятия</h2>
+            <div class="terms">
+                <div><b>Персональные данные</b> — любая информация, относящаяся прямо или косвенно к определённому или определяемому физическому лицу (субъекту персональных данных).</div>
+                <div><b>Оператор</b> — юридическое лицо, самостоятельно или совместно с другими лицами организующее и (или) осуществляющее обработку персональных данных, а также определяющее цели обработки, состав данных и действия с ними.</div>
+                <div><b>Обработка персональных данных</b> — любое действие или совокупность действий с персональными данными: сбор, запись, систематизация, накопление, хранение, уточнение, извлечение, использование, передача, обезличивание, блокирование, удаление, уничтожение.</div>
+                <div><b>Пользователь</b> — любой посетитель Сайта, в том числе направивший заявку через форму на Сайте.</div>
+                <div><b>Согласие на обработку персональных данных</b> — конкретное, предметное, информированное, сознательное и однозначное выражение воли субъекта персональных данных на обработку его данных.</div>
+                <div><b>Уничтожение персональных данных</b> — действия, в результате которых становится невозможным восстановить содержание персональных данных и (или) уничтожаются их материальные носители.</div>
+            </div>
+        </section>
+
+        <section id="s3">
+            <h2><span class="n">03</span>Оператор</h2>
+            <p>3.1. Оператором персональных данных является <span class="fill">[полное наименование организации]</span>, ИНН <span class="fill">[ИНН]</span>, ОГРН <span class="fill">[ОГРН]</span>, адрес: <span class="fill">[юридический адрес]</span>.</p>
+            <p>3.2. По вопросам обработки персональных данных можно обратиться по адресу электронной почты <span class="fill">[e-mail для обращений]</span>.</p>
+        </section>
+
+        <section id="s4">
+            <h2><span class="n">04</span>Состав обрабатываемых данных</h2>
+            <p>4.1. Оператор обрабатывает следующие данные, которые Пользователь указывает в форме заявки:</p>
+            <ul>
+                <li>имя;</li>
+                <li>номер телефона и (или) имя пользователя в Telegram;</li>
+                <li>описание задачи и прикреплённые файлы (фотографии, чертежи, 3D-модели), если в них содержатся персональные данные.</li>
+            </ul>
+            <p>4.2. Оператор не обрабатывает специальные категории персональных данных (сведения о расовой и национальной принадлежности, политических взглядах, состоянии здоровья и т. п.) и биометрические персональные данные.</p>
+        </section>
+
+        <section id="s5">
+            <h2><span class="n">05</span>Цели обработки</h2>
+            <p>5.1. Персональные данные обрабатываются в целях:</p>
+            <ul>
+                <li>рассмотрения заявки и связи с Пользователем для уточнения задачи;</li>
+                <li>подготовки предварительной оценки сроков и стоимости работ;</li>
+                <li>заключения и исполнения договора, если Пользователь примет решение о сотрудничестве.</li>
+            </ul>
+        </section>
+
+        <section id="s6">
+            <h2><span class="n">06</span>Правовые основания обработки</h2>
+            <p>6.1. Правовым основанием обработки является согласие Пользователя на обработку персональных данных, которое он даёт, отмечая соответствующее поле в форме заявки, а также необходимость заключения и исполнения договора, стороной которого является Пользователь.</p>
+            <p>6.2. Оператор обрабатывает персональные данные только в случае их заполнения и (или) отправки Пользователем самостоятельно через форму на Сайте.</p>
+        </section>
+
+        <section id="s7">
+            <h2><span class="n">07</span>Порядок и сроки обработки</h2>
+            <p>7.1. Обработка персональных данных осуществляется с использованием средств автоматизации и без них.</p>
+            <p>7.2. Персональные данные хранятся не дольше, чем этого требуют цели обработки, — <span class="fill">[срок хранения]</span>, если иной срок не установлен законодательством или договором.</p>
+            <p>7.3. Файлы, прикреплённые к заявке, передаются Оператору вместе с заявкой и удаляются из промежуточного хранилища после отправки.</p>
+            <p>7.4. Оператор не передаёт персональные данные третьим лицам, за исключением случаев, предусмотренных законодательством Российской Федерации.</p>
+            <p>7.5. Персональные данные граждан Российской Федерации записываются, систематизируются, накапливаются, хранятся и обновляются с использованием баз данных, находящихся на территории Российской Федерации.</p>
+        </section>
+
+        <section id="s8">
+            <h2><span class="n">08</span>Меры по защите данных</h2>
+            <p>8.1. Оператор принимает правовые, организационные и технические меры для защиты персональных данных от неправомерного или случайного доступа, уничтожения, изменения, блокирования, копирования, распространения и иных неправомерных действий.</p>
+            <p>8.2. Доступ к персональным данным имеют только работники Оператора, которым он необходим для выполнения должностных обязанностей.</p>
+        </section>
+
+        <section id="s9">
+            <h2><span class="n">09</span>Права субъекта персональных данных</h2>
+            <p>9.1. Пользователь вправе:</p>
+            <ul>
+                <li>получать информацию об обработке своих персональных данных;</li>
+                <li>требовать уточнения, блокирования или уничтожения данных, если они неполные, устаревшие, неточные или обрабатываются незаконно;</li>
+                <li>отозвать согласие на обработку персональных данных, направив Оператору обращение по адресу <span class="fill">[e-mail для обращений]</span>;</li>
+                <li>обжаловать действия или бездействие Оператора в уполномоченном органе по защите прав субъектов персональных данных или в судебном порядке.</li>
+            </ul>
+            <p>9.2. В случае отзыва согласия Оператор прекращает обработку персональных данных в сроки, установленные законодательством.</p>
+        </section>
+
+        <section id="s10">
+            <h2><span class="n">10</span>Заключительные положения</h2>
+            <p>10.1. Оператор вправе вносить изменения в Политику. Новая редакция вступает в силу с момента её размещения на Сайте.</p>
+            <p>10.2. Актуальная редакция Политики всегда доступна на этой странице.</p>
+        </section>
+
+        <section id="consent">
+            <h2><span class="n">—</span>Согласие на обработку персональных данных</h2>
+            <div class="consent-box">
+                <p>Отмечая поле согласия в форме заявки на Сайте, я свободно, своей волей и в своём интересе даю согласие <span class="fill">[полное наименование организации]</span> (ИНН <span class="fill">[ИНН]</span>) на обработку моих персональных данных: имени, номера телефона и (или) имени пользователя в Telegram, а также сведений, указанных в описании задачи и прикреплённых файлах.</p>
+                <p>Цель обработки — рассмотрение заявки, связь со мной и подготовка предварительной оценки сроков и стоимости работ.</p>
+                <p>Согласие распространяется на сбор, запись, систематизацию, накопление, хранение, уточнение, использование, удаление и уничтожение персональных данных с использованием средств автоматизации и без них.</p>
+                <p style="margin-bottom: 0;">Согласие действует <span class="fill">[срок действия согласия]</span> и может быть отозвано мной в любой момент путём направления обращения на адрес <span class="fill">[e-mail для обращений]</span>.</p>
+            </div>
+        </section>
+
+        <p class="doc-date">Редакция от <span class="fill">[дата]</span></p>
+
+        <div class="bottom-back"><a href="index_v6.html#contact" class="back js-back"><span aria-hidden="true">←</span> Вернуться к заявке</a></div>
+    </article>
+</main>
+
+<footer>
+    <div class="container">© 2026 РЕВЕРСПРОМ</div>
+</footer>
+
+<script>
+    // «Вернуться к заявке»: если пришли со страницы сайта — возвращаемся туда же (форма и прокрутка сохраняются),
+    // иначе (страница открыта напрямую) — обычный переход по ссылке к форме заявки.
+    const cameFromSite = document.referrer && new URL(document.referrer).origin === location.origin && history.length > 1;
+    document.querySelectorAll('.js-back').forEach(a => {
+        a.addEventListener('click', (e) => {
+            if (cameFromSite) {
+                e.preventDefault();
+                history.back();
+            }
+        });
+    });
+</script>
+</body>
+</html>
