@@ -28,7 +28,7 @@
         "description": "Промышленный реверс-инжиниринг: 3D-сканирование, конструкторская документация и изготовление деталей по образцу.",
         "telephone": "+7-495-776-70-99",
         "email": "info@reverseprom.ru",
-        "sameAs": ["https://t.me/reversprom_ru"],
+        "sameAs": ["https://t.me/reversprom_ru", "https://max.ru/u/f9LHodD0cOLLgJ5C3ounPfdopXOQzbBP0zkR38lHFNVgvlXgGEjcxERsa2w"],
         "knowsAbout": ["Реверс-инжиниринг", "3D-сканирование", "Изготовление деталей по образцу", "Конструкторская документация"]
     }
     </script>
@@ -193,11 +193,21 @@
             color: #cbd5e1;
             font-weight: 500;
             font-size: 0.95rem;
+            white-space: nowrap;
         }
 
         .nav-links a:not(.btn):hover { color: #fff; }
 
-        .nav-cta { padding: 0.55rem 1.1rem; font-size: 0.95rem; }
+        .icon-max { width: 1em; height: 1em; vertical-align: -0.125em; flex-shrink: 0; }
+
+        /* На средних экранах у мессенджеров в шапке остаются только значки, чтобы меню не переносилось */
+        @media (max-width: 1100px) {
+            .nav-links { gap: 1.2rem; }
+            .nav-label { display: none; }
+            .nav-links .fa-telegram, .nav-links .icon-max { font-size: 1.2rem; }
+        }
+
+        .nav-cta { padding: 0.55rem 1.1rem; font-size: 0.95rem; white-space: nowrap; }
 
         /* Первый экран */
         .hero {
@@ -985,7 +995,7 @@
         }
 
         .contact-direct a:hover { color: var(--blue); }
-        .contact-direct i { width: 1.2rem; color: var(--blue); }
+        .contact-direct i, .contact-direct .icon-max { width: 1.2rem; color: var(--blue); }
 
         .contact-form {
             background: #fff;
@@ -1162,6 +1172,10 @@
     </style>
 </head>
 <body>
+<!-- Значок мессенджера MAX (контур из официального favicon max.ru), подключается через <use href="#icon-max"> -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="icon-max" viewBox="0 0 100 100"><path fill="currentColor" fill-rule="evenodd" d="M50.7571 0.261719C78.2929 0.261719 99.8857 22.5974 99.8857 50.1474C99.8857 77.6974 77.6071 99.4903 51.0214 99.4903C41.5857 99.4903 37.0143 98.1617 29.65 92.9474C29.1429 92.5903 28.45 92.6831 28.0214 93.1403C22.3571 99.1831 7.85 103.426 7.18571 95.176C7.18571 80.7903 0 71.4474 0 49.876C0 21.5546 23.2214 0.261719 50.7571 0.261719ZM51.5286 24.8117C38.4643 24.126 28.2643 33.1974 26.0143 47.3831C24.15 59.1332 27.45 73.4546 30.2786 74.176C31.4786 74.4832 34.3571 72.276 36.4571 70.2974C36.85 69.926 37.45 69.8617 37.9071 70.1474C41.1786 72.1474 44.8786 73.6474 48.9571 73.8617C62.3714 74.5617 74.2571 64.0617 74.9643 50.6474C75.6643 37.2331 64.9429 25.5046 51.5286 24.8046V24.8117Z"/></symbol>
+</svg>
 
 <header class="site-header">
     <div class="container">
@@ -1172,7 +1186,8 @@
                 <a href="#process">Как работаем</a>
                 <a href="#works">Работы</a>
                 <a href="#faq">Вопросы</a>
-                <a href="https://t.me/reversprom_ru" target="_blank" rel="noopener" aria-label="Telegram"><i class="fab fa-telegram" aria-hidden="true"></i> Telegram</a>
+                <a href="https://t.me/reversprom_ru" target="_blank" rel="noopener" aria-label="Telegram"><i class="fab fa-telegram" aria-hidden="true"></i><span class="nav-label"> Telegram</span></a>
+                <a href="https://max.ru/u/f9LHodD0cOLLgJ5C3ounPfdopXOQzbBP0zkR38lHFNVgvlXgGEjcxERsa2w" target="_blank" rel="noopener" aria-label="MAX"><svg class="icon-max" aria-hidden="true"><use href="#icon-max"></use></svg><span class="nav-label"> MAX</span></a>
                 <a href="#contact" class="btn btn-primary nav-cta">Оставить заявку</a>
             </div>
         </nav>
@@ -1196,6 +1211,7 @@
                 <div class="hero-actions">
                     <a href="#contact" class="btn btn-primary"><i class="fas fa-camera" aria-hidden="true"></i> Отправить фото детали</a>
                     <a href="https://t.me/reversprom_ru" class="btn btn-ghost" target="_blank" rel="noopener"><i class="fab fa-telegram" aria-hidden="true"></i> Написать в Telegram</a>
+                    <a href="https://max.ru/u/f9LHodD0cOLLgJ5C3ounPfdopXOQzbBP0zkR38lHFNVgvlXgGEjcxERsa2w" class="btn btn-ghost" target="_blank" rel="noopener"><svg class="icon-max" aria-hidden="true"><use href="#icon-max"></use></svg> Написать в MAX</a>
                 </div>
                 <p class="hero-note">Для первичной оценки достаточно фото и основных размеров.</p>
                 <div class="hero-stats">
@@ -1524,6 +1540,7 @@
 
                 <div class="contact-direct">
                     <a href="https://t.me/reversprom_ru" target="_blank" rel="noopener"><i class="fab fa-telegram" aria-hidden="true"></i> @reversprom_ru</a>
+                    <a href="https://max.ru/u/f9LHodD0cOLLgJ5C3ounPfdopXOQzbBP0zkR38lHFNVgvlXgGEjcxERsa2w" target="_blank" rel="noopener"><svg class="icon-max" aria-hidden="true"><use href="#icon-max"></use></svg> MAX: Реверспром</a>
                     <a href="tel:+74957767099"><i class="fas fa-phone" aria-hidden="true"></i> +7 (495) 776-70-99</a>
                     <a href="mailto:info@reverseprom.ru"><i class="fas fa-envelope" aria-hidden="true"></i> info@reverseprom.ru</a>
                 </div>
@@ -1533,7 +1550,7 @@
                 <form id="leadForm" action="#" method="POST">
                     <label for="leadName">Ваше имя</label>
                     <input id="leadName" name="name" type="text" placeholder="Алексей" autocomplete="name" required>
-                    <label for="leadContact">Телефон или Telegram</label>
+                    <label for="leadContact">Телефон, Telegram или MAX</label>
                     <input id="leadContact" name="contact" type="text" placeholder="+7 999 123-45-67 или @username" autocomplete="tel" required>
                     <label for="leadComment">Описание задачи</label>
                     <textarea id="leadComment" name="comment" rows="3" placeholder="Наименование детали, требуемое количество, материал (если известен), наличие образца"></textarea>
@@ -1592,6 +1609,7 @@
                 <a href="tel:+74957767099">+7 (495) 776-70-99</a>
                 <a href="mailto:info@reverseprom.ru">info@reverseprom.ru</a>
                 <a href="https://t.me/reversprom_ru" target="_blank" rel="noopener">Telegram: @reversprom_ru</a>
+                <a href="https://max.ru/u/f9LHodD0cOLLgJ5C3ounPfdopXOQzbBP0zkR38lHFNVgvlXgGEjcxERsa2w" target="_blank" rel="noopener">MAX: Реверспром</a>
             </div>
         </div>
         <div class="footer-bottom">© 2026 РЕВЕРСПРОМ</div>
