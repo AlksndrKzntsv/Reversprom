@@ -776,6 +776,20 @@
         }
 
         .gallery-item.render img { object-fit: contain; background: #fff; padding: 1rem; }
+        .gallery-img { position: relative; }
+        .pr-badge {
+            position: absolute;
+            left: 12px;
+            top: 12px;
+            z-index: 1;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #fff;
+            background: var(--blue);
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+        }
+
 
         .gallery-cta {
             display: flex;
@@ -1425,6 +1439,55 @@
         </div>
     </section>
 
+    <!-- Проектирование оборудования -->
+    <section id="design" class="section">
+        <div class="container">
+            <div class="section-head">
+                <div class="eyebrow">Проектирование оборудования</div>
+                <h2>Проектируем узлы и оборудование целиком</h2>
+                <p>Кроме деталей по образцу, разрабатываем 3D-модели и конструкторскую документацию на оборудование: аспирацию и пылеочистку, запорную арматуру, дробилки, оснастку. Нажмите на карточку, чтобы посмотреть все материалы.</p>
+            </div>
+            <div class="gallery" aria-label="Проекты оборудования">
+                <button class="gallery-item render" type="button" data-set="pr-dust" aria-label="Открыть материалы: Устройство выгрузки пыли">
+                    <div class="gallery-img"><span class="pr-badge">Изготовлено</span><img src="Pictures/Projects/Dust%20Discharge/01.jpg" alt="Устройство выгрузки пыли, 3D-модель" loading="lazy"></div>
+                    <div class="gallery-caption"><strong>Устройство выгрузки пыли</strong><span>Проект и изготовление · 2 <i class="fas fa-images" aria-hidden="true"></i></span></div>
+                </button>
+                <button class="gallery-item render" type="button" data-set="pr-bag" aria-label="Открыть материалы: Рукавный фильтр на 120 рукавов">
+                    <div class="gallery-img"><img src="Pictures/Projects/Bag%20Filter/01.jpg" alt="Рукавный фильтр на 120 рукавов, 3D-модель" loading="lazy"></div>
+                    <div class="gallery-caption"><strong>Рукавный фильтр на 120 рукавов</strong><span>Аспирация и пылеочистка · 4 <i class="fas fa-images" aria-hidden="true"></i></span></div>
+                </button>
+                <button class="gallery-item render" type="button" data-set="pr-cyclone" aria-label="Открыть материалы: Двойной циклон с рукавным фильтром">
+                    <div class="gallery-img"><img src="Pictures/Projects/Double%20Cyclone/01.jpg" alt="Двойной циклон с рукавным фильтром, 3D-модель" loading="lazy"></div>
+                    <div class="gallery-caption"><strong>Двойной циклон с рукавным фильтром</strong><span>Аспирация и пылеочистка · 2 <i class="fas fa-images" aria-hidden="true"></i></span></div>
+                </button>
+                <button class="gallery-item render" type="button" data-set="pr-hopper" aria-label="Открыть материалы: Плоский бункер электрофильтра">
+                    <div class="gallery-img"><img src="Pictures/Projects/ESP%20Hopper/01.jpg" alt="Плоский бункер электрофильтра, 3D-модель" loading="lazy"></div>
+                    <div class="gallery-caption"><strong>Плоский бункер электрофильтра</strong><span>Аспирация и пылеочистка · 1 <i class="fas fa-images" aria-hidden="true"></i></span></div>
+                </button>
+                <button class="gallery-item render" type="button" data-set="pr-crusher" aria-label="Открыть материалы: Молотковая дробилка 1500">
+                    <div class="gallery-img"><img src="Pictures/Projects/Hammer%20Crusher/01.jpg" alt="Молотковая дробилка 1500, 3D-модель" loading="lazy"></div>
+                    <div class="gallery-caption"><strong>Молотковая дробилка 1500</strong><span>Дробильное оборудование · 4 <i class="fas fa-images" aria-hidden="true"></i></span></div>
+                </button>
+                <button class="gallery-item render" type="button" data-set="pr-thermo" aria-label="Открыть материалы: Оснастка для термоформования">
+                    <div class="gallery-img"><img src="Pictures/Projects/Thermoforming/01.jpg" alt="Оснастка для термоформования, 3D-модель" loading="lazy"></div>
+                    <div class="gallery-caption"><strong>Оснастка для термоформования</strong><span>Пресс-формы и оснастка · 4 <i class="fas fa-images" aria-hidden="true"></i></span></div>
+                </button>
+                <button class="gallery-item render" type="button" data-set="pr-gate" aria-label="Открыть материалы: Шиберная заслонка ЗШП-800">
+                    <div class="gallery-img"><img src="Pictures/Projects/Gate%20Valve/01.jpg" alt="Шиберная заслонка ЗШП-800, 3D-модель" loading="lazy"></div>
+                    <div class="gallery-caption"><strong>Шиберная заслонка ЗШП-800</strong><span>Запорная арматура · 2 <i class="fas fa-images" aria-hidden="true"></i></span></div>
+                </button>
+                <button class="gallery-item render" type="button" data-set="pr-shutoff" aria-label="Открыть материалы: Двойной запорный клапан с приводом">
+                    <div class="gallery-img"><img src="Pictures/Projects/Shut-off%20Valve/01.jpg" alt="Двойной запорный клапан с приводом, 3D-модель" loading="lazy"></div>
+                    <div class="gallery-caption"><strong>Двойной запорный клапан с приводом</strong><span>Запорная арматура · 2 <i class="fas fa-images" aria-hidden="true"></i></span></div>
+                </button>
+                <button class="gallery-item render" type="button" data-set="pr-trolley" aria-label="Открыть материалы: Кабельная тележка грузового подъёмника">
+                    <div class="gallery-img"><img src="Pictures/Projects/Cable%20Trolley/01.jpg" alt="Кабельная тележка грузового подъёмника, 3D-модель" loading="lazy"></div>
+                    <div class="gallery-caption"><strong>Кабельная тележка грузового подъёмника</strong><span>Подъёмное оборудование · 5 <i class="fas fa-images" aria-hidden="true"></i></span></div>
+                </button>
+            </div>
+        </div>
+    </section>
+
     <!-- FAQ -->
     <section id="faq" class="section">
         <div class="container faq">
@@ -1521,6 +1584,7 @@
                 <a href="#services">Услуги</a>
                 <a href="#process">Как работаем</a>
                 <a href="#works">Примеры работ</a>
+                <a href="#design">Проектирование</a>
                 <a href="#faq">Вопросы</a>
             </div>
             <div>
@@ -1617,6 +1681,50 @@
         ] },
         gear: { title: 'Детали планетарного редуктора', items: [
             [P + 'Planetary%20Gear/Planetary%20Gear%20photo.jpg', 'Водило с сателлитами, шестерня и зубчатый венец']
+        ] },
+        'pr-dust': { title: 'Устройство выгрузки пыли', items: [
+            ['Pictures/Projects/Dust%20Discharge/01.jpg', '3D-модель устройства выгрузки пыли'],
+            ['Pictures/Projects/Dust%20Discharge/02.jpg', 'Изготовленные устройства в цеху']
+        ] },
+        'pr-bag': { title: 'Рукавный фильтр на 120 рукавов', items: [
+            ['Pictures/Projects/Bag%20Filter/01.jpg', 'Общий вид фильтра'],
+            ['Pictures/Projects/Bag%20Filter/02.jpg', 'Фильтр с площадкой обслуживания'],
+            ['Pictures/Projects/Bag%20Filter/03.jpg', 'Рукава и коллекторы регенерации'],
+            ['Pictures/Projects/Bag%20Filter/04.jpg', 'Вид сверху на крышки камер']
+        ] },
+        'pr-cyclone': { title: 'Двойной циклон с рукавным фильтром', items: [
+            ['Pictures/Projects/Double%20Cyclone/01.jpg', 'Общий вид установки'],
+            ['Pictures/Projects/Double%20Cyclone/02.jpg', 'Циклоны и газоходы']
+        ] },
+        'pr-hopper': { title: 'Плоский бункер электрофильтра', items: [
+            ['Pictures/Projects/ESP%20Hopper/01.jpg', 'Бункер с приводом выгрузки']
+        ] },
+        'pr-crusher': { title: 'Молотковая дробилка 1500', items: [
+            ['Pictures/Projects/Hammer%20Crusher/01.jpg', 'Общий вид дробилки'],
+            ['Pictures/Projects/Hammer%20Crusher/02.jpg', 'Ротор с молотками'],
+            ['Pictures/Projects/Hammer%20Crusher/03.jpg', 'Узел опоры ротора'],
+            ['Pictures/Projects/Hammer%20Crusher/04.jpg', 'Подшипниковый узел']
+        ] },
+        'pr-thermo': { title: 'Оснастка для термоформования', items: [
+            ['Pictures/Projects/Thermoforming/01.jpg', 'Оснастка в раскрытом положении'],
+            ['Pictures/Projects/Thermoforming/02.jpg', 'Матрица и пуансон'],
+            ['Pictures/Projects/Thermoforming/03.jpg', 'Общий вид оснастки'],
+            ['Pictures/Projects/Thermoforming/04.jpg', 'Разнесённый вид сборки']
+        ] },
+        'pr-gate': { title: 'Шиберная заслонка ЗШП-800', items: [
+            ['Pictures/Projects/Gate%20Valve/01.jpg', 'Заслонка открыта'],
+            ['Pictures/Projects/Gate%20Valve/02.jpg', 'Заслонка закрыта']
+        ] },
+        'pr-shutoff': { title: 'Двойной запорный клапан с приводом', items: [
+            ['Pictures/Projects/Shut-off%20Valve/01.jpg', 'Клапан с электроприводом'],
+            ['Pictures/Projects/Shut-off%20Valve/02.jpg', 'Вид с обратной стороны']
+        ] },
+        'pr-trolley': { title: 'Кабельная тележка грузового подъёмника', items: [
+            ['Pictures/Projects/Cable%20Trolley/01.jpg', 'Подъёмник с кабельной тележкой'],
+            ['Pictures/Projects/Cable%20Trolley/02.jpg', 'Платформа подъёмника'],
+            ['Pictures/Projects/Cable%20Trolley/03.jpg', 'Узел кабельной тележки'],
+            ['Pictures/Projects/Cable%20Trolley/04.jpg', 'Тележка кабеля'],
+            ['Pictures/Projects/Cable%20Trolley/05.jpg', 'Сборочный чертёж']
         ] },
         panel: { title: 'Пневмопанель управления', items: [
             [P + 'Pneumatic%20Panel/Pneumatic%20Panel%20photo.jpg', 'Собранная пневмопанель']
