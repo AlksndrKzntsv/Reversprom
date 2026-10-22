@@ -13,7 +13,7 @@
 #      → { ok }  — функция скачивает файлы из бакета, отправляет письмо и удаляет файлы.
 #   Поле website — ловушка для ботов (скрыто на сайте); если оно заполнено, письмо не отправляется.
 #
-# Все настройки и секреты — ТОЛЬКО в переменных окружения функции (см. DEPLOY.md).
+# Все настройки и секреты — ТОЛЬКО в переменных окружения функции (см. docs/DEPLOY.md).
 # Используется только стандартная библиотека Python — дополнительные зависимости не нужны.
 
 import base64
@@ -46,7 +46,7 @@ S3_SECRET_KEY = os.environ.get("S3_SECRET_KEY", "")
 S3_HOST = os.environ.get("S3_HOST", "storage.yandexcloud.net")
 S3_REGION = os.environ.get("S3_REGION", "ru-central1")
 
-# --- CORS: адрес сайта, например "https://alksndrkzntsv.github.io" (без пути и слэша в конце).
+# --- CORS: адрес сайта, например "https://reverseprom.ru" (без пути и слэша в конце).
 # Можно указать несколько через запятую (например, ещё http://localhost:8080 для проверки).
 ALLOWED_ORIGINS = [o.strip() for o in os.environ.get("ALLOWED_ORIGIN", "").split(",") if o.strip()]
 

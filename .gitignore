@@ -1,10 +1,12 @@
+# Секреты и локальное окружение
 .env
-.DS_Store
+venv/
+.venv/
 __pycache__/
 *.pyc
-.venv/
-venv/
-logotips/
+.DS_Store
 
-# Исходники моделей от конструктора (STEP/STL/SLDPRT) — не публиковать
-Pictures/new pictures/
+# Рабочие материалы — не публиковать
+logotips/
+# Исходники моделей от конструктора (STEP/STL/SLDPRT)
+models/
